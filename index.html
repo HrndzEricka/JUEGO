@@ -1,0 +1,1972 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>El Último en Pie Profe Ericka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito:wght@500;700;800;900&display=swap">
+<style>
+/* Proyector de aula: la compu de la profe muestra la pregunta en grande; los celulares son controles de 4 colores */
+:root{
+  --ink:#10192e; --panel:#1b2742; --deep:#0b1222; --line:#2e3d60; --chalk:#f3efe4; --mute:#9aa6c2;
+  --a0:#e8553f; --a1:#2f8fd6; --a2:#e0a81e; --a3:#2e9e6b; --good:#4fd18b; --bad:#ef6a55; --warn:#f2c14e;
+  --gold:#e0a81e; --silver:#b9c3d8; --bronze:#c98a5a;
+  --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+html{background:var(--ink)}
+body{background:var(--ink);color:var(--chalk);font-family:var(--body);font-size:16px;line-height:1.45}
+[hidden]{display:none!important}
+.wrap{max-width:1150px;margin:0 auto;padding-inline:16px;padding-block:18px 48px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.08;text-wrap:balance}
+p{margin:0}
+button{font:inherit;font-weight:800;cursor:pointer;border:0;border-radius:12px;padding:11px 18px;color:var(--chalk);background:var(--line)}
+button:hover{filter:brightness(1.12)}
+button:disabled{opacity:.4;cursor:not-allowed;filter:none}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.go{background:var(--a2);color:var(--ink)}
+.ghost{background:transparent;border:2px solid var(--line)}
+.danger{background:var(--bad);color:var(--ink)}
+.small{padding:6px 12px;font-size:14px;border-radius:9px}
+input,select,textarea{font:inherit;color:var(--chalk);background:var(--deep);border:2px solid var(--line);border-radius:10px;padding:9px 12px;min-width:0}
+textarea{width:100%;min-height:190px;resize:vertical;font-size:15px;line-height:1.5}
+input::placeholder,textarea::placeholder{color:#64708e}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.spacer{flex:1}
+.muted{color:var(--mute)}
+.hint{color:var(--mute);font-size:14px}
+.err{color:var(--bad);min-height:1.4em;font-size:15px;font-weight:700}
+.box{background:var(--panel);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.box h2{font-size:22px}
+.step{font-family:var(--display);color:var(--a2)}
+.brand{font-weight:800;font-size:clamp(26px,4vw,40px);letter-spacing:-.01em}
+.brand span{color:var(--a2)}
+.pinChip{display:flex;align-items:center;gap:10px;background:var(--deep);border:2px solid var(--line);border-radius:12px;padding:6px 14px;cursor:pointer;color:var(--chalk)}
+.pinChip b{font-family:var(--display);font-size:24px;letter-spacing:.12em;font-variant-numeric:tabular-nums;color:var(--a2)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--good);display:inline-block;flex:none}
+.dot.off{background:var(--line)}
+code{background:var(--deep);border-radius:6px;padding:1px 6px;font-size:14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--chalk);color:var(--ink);font-weight:800;padding:10px 18px;border-radius:12px;z-index:50;max-width:calc(100% - 32px)}
+
+/* figuras y colores de respuesta */
+.a0{background:var(--a0)}.a1{background:var(--a1)}.a2{background:var(--a2);color:var(--ink)}.a3{background:var(--a3)}
+.shape{width:30px;height:30px;flex:none}
+
+/* ---------- editor ---------- */
+.edGrid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:18px;align-items:start}
+@media (max-width:900px){.edGrid{grid-template-columns:1fr}}
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{border:2px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--ink)}
+.card.need{border-color:var(--warn)}
+.cTop{display:flex;gap:10px;align-items:center}
+.cNum{font-family:var(--display);font-weight:800;font-size:20px;color:var(--a2);min-width:2ch;font-variant-numeric:tabular-nums}
+.cTop input{flex:1}
+.pill{font-size:12px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.pill.ok{background:var(--good);color:var(--ink)}
+.pill.no{background:var(--warn);color:var(--ink)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:560px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;align-items:center;gap:8px;border-radius:11px;padding:5px;background:var(--deep);border:2px solid transparent;min-width:0}
+.opt.right{border-color:var(--good);background:#143326}
+.opt input{flex:1;border:0;background:transparent;padding:6px 4px}
+.opt .mk{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;padding:0;flex:none}
+.opt .mk svg{width:22px;height:22px}
+.opt .tick{width:38px;height:38px;padding:0;border-radius:9px;background:transparent;border:2px solid var(--line);color:var(--mute);font-size:18px;flex:none}
+.opt.right .tick{background:var(--good);border-color:var(--good);color:var(--ink)}
+.cFoot{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--mute)}
+.cFoot select{padding:5px 8px;font-size:14px}
+.empty{border:2px dashed var(--line);border-radius:14px;padding:26px;text-align:center;color:var(--mute)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters .on{background:var(--chalk);color:var(--ink)}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.pack{background:var(--ink);border:2px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pack .pTitle{font-family:var(--display);font-size:18px;line-height:1.15;overflow-wrap:anywhere}
+.pack .row{margin-top:auto;padding-top:4px;gap:6px}
+.tag{align-self:flex-start;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 9px;color:var(--ink)}
+.t0{background:var(--a1);color:var(--chalk)}.t1{background:var(--a3);color:var(--chalk)}.t2{background:var(--a2)}.t3{background:var(--chalk)}
+.saveRow input{flex:1;min-width:200px}
+.sticky{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;z-index:5}
+
+/* ---------- sala y juego (pantalla proyectada) ---------- */
+.lobbyHead{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;background:var(--chalk);color:var(--ink);border-radius:20px;padding:20px 26px}
+@media (max-width:700px){.lobbyHead{grid-template-columns:1fr}}
+.lobbyHead .where{font-size:clamp(18px,2.4vw,26px);font-weight:800}
+.lobbyHead .where b{font-family:var(--display)}
+.bigPin{font-family:var(--display);font-weight:800;font-size:clamp(64px,11vw,130px);letter-spacing:.08em;line-height:1;font-variant-numeric:tabular-nums}
+.people{display:flex;flex-wrap:wrap;gap:10px}
+.person{display:flex;align-items:center;gap:8px;background:var(--panel);border-radius:999px;padding:8px 8px 8px 14px;font-weight:800;font-size:18px}
+.person button{padding:2px 9px;border-radius:999px;font-size:13px;background:transparent;color:var(--mute)}
+.person button:hover{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--mute);font-weight:800}
+.bar .count{color:var(--chalk);font-size:20px}
+.qtext{background:var(--chalk);color:var(--ink);border-radius:18px;padding:26px 22px;text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(24px,4.2vw,50px);overflow-wrap:anywhere}
+.mid{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}
+.clock{width:118px;height:118px;position:relative;flex:none}
+.clock svg{width:100%;height:100%;transform:rotate(-90deg)}
+.clock b{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:44px;font-variant-numeric:tabular-nums}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;min-width:min(100%,520px)}
+@media (max-width:640px){.answers{grid-template-columns:1fr}}
+.ans{position:relative;display:flex;align-items:center;gap:14px;border-radius:16px;padding:18px 20px;font-size:clamp(18px,2.5vw,28px);font-weight:900;min-height:82px;overflow:hidden;transition:opacity .3s}
+.ans .shape{width:40px;height:40px}
+.ans .txt{min-width:0;overflow-wrap:anywhere;position:relative}
+.ans.dim{opacity:.3}
+.ans.win{box-shadow:0 0 0 5px var(--chalk)}
+.ans .n{margin-left:auto;font-family:var(--display);font-size:30px;position:relative;font-variant-numeric:tabular-nums}
+.board{display:flex;flex-direction:column;gap:10px;max-width:780px;width:100%;margin:0 auto}
+.brow{display:grid;grid-template-columns:3ch minmax(0,1fr) auto;gap:14px;align-items:center;background:var(--panel);border-radius:14px;padding:13px 18px;font-size:22px;font-weight:900}
+.brow .pos{font-family:var(--display);color:var(--a2);font-variant-numeric:tabular-nums}
+.brow .nm{overflow-wrap:anywhere}
+.brow .pts{font-family:var(--display);font-variant-numeric:tabular-nums}
+.brow .delta{color:var(--good);font-size:16px;margin-right:12px}
+.center{text-align:center;justify-content:center}
+.big{font-size:clamp(32px,5.5vw,60px)}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:14px;margin-top:16px}
+.pstep{width:min(210px,30vw);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.pstep .name{font-weight:900;font-size:clamp(15px,2.4vw,24px);text-align:center;overflow-wrap:anywhere}
+.pstep small{color:var(--mute);font-weight:800;font-variant-numeric:tabular-nums}
+.pstep .block{width:100%;border-radius:14px 14px 0 0;display:grid;place-items:center;font-family:var(--display);font-size:48px;color:var(--ink)}
+.p1 .block{height:220px;background:var(--gold)}.p2 .block{height:160px;background:var(--silver)}.p3 .block{height:110px;background:var(--bronze)}
+.race{display:flex;flex-direction:column;gap:7px;max-width:1000px;width:100%;margin:0 auto}
+.raceWrap{max-height:68vh;overflow-y:auto;padding-right:4px}
+.lane{display:grid;grid-template-columns:2.8em minmax(0,1fr) 5.2em;gap:10px;align-items:center}
+.lane .pos{font-family:var(--display);font-weight:800;font-size:20px;color:var(--a2);text-align:right;font-variant-numeric:tabular-nums}
+.lane .lpts{font-family:var(--display);font-weight:800;font-size:18px;text-align:right;font-variant-numeric:tabular-nums;line-height:1.05}
+.lane .lpts small{display:block;font-family:var(--body);font-size:12px;color:var(--good)}
+.track{position:relative;height:44px;border-radius:12px;background:#283247;border-top:3px solid #3d4a66;border-bottom:3px solid #3d4a66}
+.track::before{content:"";position:absolute;left:10px;right:20px;top:50%;height:2px;margin-top:-1px;background:repeating-linear-gradient(90deg,rgba(243,239,228,.45) 0 14px,transparent 14px 28px)}
+.track::after{content:"";position:absolute;right:0;top:0;bottom:0;width:14px;border-radius:0 9px 9px 0;background:repeating-conic-gradient(var(--chalk) 0 25%,var(--ink) 0 50%) 0 0/14px 14px}
+.track{--carw:82px}
+.runner{position:absolute;top:50%;left:calc((100% - var(--carw)) * var(--x,0));transform:translateY(-50%);transition:left 1.8s cubic-bezier(.2,.8,.2,1)}
+.final .runner{transition-duration:3s}
+.car{width:64px;height:32px;display:block;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
+.car.c0{color:#e8553f}.car.c1{color:#2f8fd6}.car.c2{color:#e0a81e}.car.c3{color:#2e9e6b}.car.c4{color:#b07ad9}.car.c5{color:#f08bb4}.car.c6{color:#5fc9d6}.car.c7{color:#f3efe4}
+.runner.moving .car{animation:vroom .18s linear infinite}
+.car .wh{transform-box:fill-box;transform-origin:center}
+.runner.moving .car .wh{animation:spin .35s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.final:not(.done) .lpts{opacity:0}
+.final .lpts{transition:opacity .6s}
+.final .pos{transition:transform .4s}
+.lane.arrived .pos{animation:medal .6s ease-out}
+@keyframes medal{0%{transform:scale(.2)}70%{transform:scale(1.5)}100%{transform:scale(1)}}
+.lane.arrived .track{box-shadow:0 0 0 3px var(--gold)}
+.lane.out{opacity:.75}
+.runner.crashed .car{animation:crash .8s ease-out forwards}
+@keyframes crash{0%{transform:rotate(0)}35%{transform:translateY(-10px) rotate(220deg)}70%{transform:translateY(2px) rotate(170deg)}100%{transform:translateY(3px) rotate(180deg);filter:grayscale(.85) brightness(.6)}}
+.boom{position:absolute;left:32px;top:50%;font-size:32px;line-height:1;pointer-events:none;animation:boom 1.4s ease-out forwards}
+@keyframes boom{0%{transform:translate(-50%,-50%) scale(.2)}25%{transform:translate(-50%,-50%) scale(1.7)}100%{transform:translate(-50%,-60%) scale(1);opacity:.85}}
+.smoke{position:absolute;left:20px;top:0;font-size:20px;opacity:0;animation:smoke 2.4s ease-out .5s infinite}
+@keyframes smoke{0%{transform:translate(0,0) scale(.6);opacity:.8}100%{transform:translate(-14px,-22px) scale(1.4);opacity:0}}
+.finTitle{transition:transform .5s}
+.finTitle.win{animation:medal .7s ease-out}
+.podium{margin-top:6px}
+.pstep .car{width:96px;height:48px}
+.pstep .medal{font-size:40px;line-height:1}
+.pstep .name{font-size:clamp(16px,2.4vw,24px)}
+.pstep .block{font-size:44px;transform-origin:bottom}
+.pstep.p1 .name{color:var(--gold)}
+.pstep.me .name::after{content:" (usted)";color:var(--mute);font-size:.7em}
+.podium.show .pstep{animation:podIn .5s ease-out both}
+.podium.show .pstep .block{animation:rise .8s cubic-bezier(.2,.9,.3,1.2) both}
+.podium.show .p3,.podium.show .p3 .block{animation-delay:0s}
+.podium.show .p2,.podium.show .p2 .block{animation-delay:.5s}
+.podium.show .p1,.podium.show .p1 .block{animation-delay:1s}
+@keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes podIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@media (max-width:560px){
+  .podium{gap:8px}
+  .pstep .car{width:60px;height:30px}.pstep .medal{font-size:28px}
+  .p1 .block{height:120px}.p2 .block{height:88px}.p3 .block{height:62px}.pstep .block{font-size:30px}
+}
+.phone>*{min-width:0}
+.hero{min-width:0;position:relative;border-radius:22px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#24365f 0%,var(--ink) 72%);padding:26px 16px 0;text-align:center;border:2px solid var(--line)}
+.hero::before{content:"";position:absolute;left:0;right:0;top:0;height:12px;background:repeating-conic-gradient(var(--chalk) 0 25%,var(--ink) 0 50%) 0 0/12px 12px}
+.hTop{font-family:var(--display);font-weight:800;letter-spacing:.22em;font-size:clamp(14px,4vw,18px);color:var(--chalk);margin-top:8px}
+.hMain{display:inline-block;font-family:var(--display);font-weight:800;font-style:italic;font-size:clamp(44px,15vw,92px);line-height:1;white-space:nowrap;max-width:100%;letter-spacing:-.01em;transform:skewX(-9deg);background:linear-gradient(180deg,#ffe27a 0%,#e0a81e 55%,#e8553f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 #0b1222);position:relative;padding:.06em .4em .1em .25em}
+.hMain::before,.hMain::after{content:"";position:absolute;top:30%;width:.7em;height:.07em;border-radius:9px;background:var(--a2);box-shadow:0 .16em 0 var(--a0),0 .32em 0 var(--a2);opacity:.8}
+.hMain::before{right:100%}.hMain::after{left:100%}
+.hChip{display:inline-block;margin-top:12px;background:var(--a0);color:var(--chalk);font-weight:900;letter-spacing:.14em;font-size:14px;padding:5px 14px;border-radius:999px;transform:rotate(-2deg);box-shadow:0 3px 0 #8e2a1c}
+.road{position:relative;height:104px;margin:20px -16px 0;background:#283247;border-top:4px solid #3d4a66}
+.road::before{content:"";position:absolute;left:0;right:0;top:50%;height:3px;margin-top:-1.5px;background:repeating-linear-gradient(90deg,rgba(243,239,228,.55) 0 22px,transparent 22px 44px);animation:roadmove .6s linear infinite}
+@keyframes roadmove{to{background-position:-44px 0}}
+.road::after{content:"";position:absolute;right:0;top:0;bottom:0;width:16px;background:repeating-conic-gradient(var(--chalk) 0 25%,var(--ink) 0 50%) 0 0/16px 16px}
+.rcar{position:absolute;width:84px;height:42px;animation:drive var(--d,5s) linear infinite;animation-delay:var(--dl,0s)}
+.rcar .car{width:84px;height:42px}
+.rcar .wh{animation:spin .3s linear infinite}
+.rcar.l1{top:4px}.rcar.l2{top:56px}
+@keyframes drive{from{left:-100px}to{left:calc(100% + 20px)}}
+.pairChk{display:flex!important;align-items:center;gap:10px;text-transform:none!important;letter-spacing:0!important;font-size:16px!important;color:var(--chalk)!important;cursor:pointer;margin:6px 0 2px}
+.pairChk input{width:22px!important;height:22px;accent-color:var(--a2);flex:none}
+#pairBox{display:flex;flex-direction:column;gap:6px}
+#pairBox[hidden]{display:none}
+.join .codeIn{border-color:var(--a2);box-shadow:0 0 0 4px rgba(224,168,30,.15)}
+.joinTitle{font-family:var(--display);font-weight:800;font-size:24px;text-align:center}
+.myCar{display:flex;flex-direction:column;align-items:center;gap:6px}
+.myCar .car{width:150px;height:75px}
+.dblBadge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#ffe27a,#e0a81e);color:var(--ink);font-weight:900;border-radius:999px;padding:4px 12px;letter-spacing:.04em;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.qtext.dbl,.sQ.dbl{box-shadow:0 0 0 5px var(--a2),0 0 30px rgba(224,168,30,.5)}
+.dblSplash{position:fixed;inset:0;z-index:45;display:grid;place-items:center;text-align:center;padding:16px;background:radial-gradient(circle at 50% 45%,#3a2a06 0%,rgba(11,18,34,.96) 65%)}
+.dblSplash .in{display:flex;flex-direction:column;gap:10px;align-items:center;animation:zoomIn .5s cubic-bezier(.2,.9,.3,1.3) both}
+.dblSplash .x2{font-family:var(--display);font-weight:800;font-style:italic;font-size:clamp(90px,26vw,220px);line-height:.9;background:linear-gradient(180deg,#ffe27a,#e0a81e 55%,#e8553f);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 0 #0b1222)}
+.dblSplash h2{font-size:clamp(26px,6vw,54px)}
+.dblSplash p{font-weight:800;font-size:clamp(16px,2.6vw,24px);color:var(--chalk)}
+.dblSplash .bolt{font-size:clamp(40px,8vw,80px);animation:pulse .5s ease-in-out infinite}
+@keyframes zoomIn{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.picker{display:flex;flex-direction:column;gap:12px;width:100%}
+.picker h3{font-size:18px;text-align:center}
+.pickRow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.pickRow button{padding:6px 2px;border-radius:12px;background:var(--deep);border:3px solid transparent}
+.pickRow button[aria-pressed="true"]{border-color:var(--a2);background:#2a3a63}
+.pickRow .car{width:100%;height:auto;aspect-ratio:2/1}
+.swatches{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.swatches button{aspect-ratio:1;border-radius:50%;padding:0;border:3px solid var(--deep);min-width:0}
+.swatches button[aria-pressed="true"]{border-color:var(--chalk);box-shadow:0 0 0 3px var(--a2)}
+.person .car{width:44px;height:22px}
+.fast{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;background:linear-gradient(90deg,rgba(224,168,30,.18),rgba(224,168,30,.05));border:2px solid var(--a2);border-radius:14px;padding:10px 14px;font-weight:900;font-size:clamp(16px,2.4vw,24px);text-align:center}
+.fast .car{width:64px;height:32px}
+.fast b{color:var(--a2)}
+.lane.bluff .rn{animation:bluff .5s ease-in-out 3}
+@keyframes bluff{50%{background:var(--a2);color:var(--ink)}}
+.crowd{display:flex;justify-content:center;gap:clamp(4px,2vw,12px);font-size:clamp(28px,8vw,46px);padding:26px 8px 16px;margin:18px -16px 0;background:#283247;border-top:4px solid #3d4a66}
+.crowd span{display:inline-block;transform-origin:bottom center;animation-duration:7s;animation-iteration-count:infinite;position:relative}
+.crowd .c3{animation:bob 1.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.crowd .c3::after{content:"👑";position:absolute;left:50%;top:-.7em;font-size:.6em;opacity:0;transform:translateX(-50%);animation:crown 7s infinite}
+@keyframes crown{0%,78%{opacity:0;transform:translate(-50%,6px)}84%,94%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
+.crowd .c0{animation-name:fall0}
+@keyframes fall0{0%,14%{transform:none;opacity:1;filter:none}18%,92%{transform:rotate(90deg) translate(6px,4px);opacity:.35;filter:grayscale(1)}100%{transform:none;opacity:1;filter:none}}
+.crowd .c1{animation-name:fall1}
+@keyframes fall1{0%,44%{transform:none;opacity:1;filter:none}48%,92%{transform:rotate(90deg) translate(6px,4px);opacity:.35;filter:grayscale(1)}100%{transform:none;opacity:1;filter:none}}
+.crowd .c2{animation-name:fall2}
+@keyframes fall2{0%,64%{transform:none;opacity:1;filter:none}68%,92%{transform:rotate(90deg) translate(6px,4px);opacity:.35;filter:grayscale(1)}100%{transform:none;opacity:1;filter:none}}
+.crowd .c4{animation-name:fall4}
+@keyframes fall4{0%,74%{transform:none;opacity:1;filter:none}78%,92%{transform:rotate(90deg) translate(6px,4px);opacity:.35;filter:grayscale(1)}100%{transform:none;opacity:1;filter:none}}
+.crowd .c5{animation-name:fall5}
+@keyframes fall5{0%,28%{transform:none;opacity:1;filter:none}32%,92%{transform:rotate(90deg) translate(6px,4px);opacity:.35;filter:grayscale(1)}100%{transform:none;opacity:1;filter:none}}
+.crowd .c6{animation-name:fall6}
+@keyframes fall6{0%,54%{transform:none;opacity:1;filter:none}58%,92%{transform:rotate(90deg) translate(6px,4px);opacity:.35;filter:grayscale(1)}100%{transform:none;opacity:1;filter:none}}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;max-width:1100px;width:100%;margin:0 auto}
+@media (max-width:560px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}}
+.tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border-radius:16px;background:var(--panel);border:3px solid transparent;text-align:center;min-width:0}
+.tile .av{font-size:clamp(34px,5vw,52px);line-height:1}
+.tile b{font-size:clamp(13px,1.6vw,17px);overflow-wrap:anywhere;line-height:1.15}
+.tile small{font-weight:800;font-size:12px;color:var(--mute)}
+.tile.alive{border-color:var(--good);background:#143326}
+.tile.alive small{color:var(--good)}
+.tile.alive .av{animation:bob 1.4s ease-in-out infinite}
+.tile.justout{border-color:var(--bad);animation:shake .5s ease-in-out 2}
+.tile.justout .av{animation:topple 1s ease-in forwards .6s}
+.tile.justout small{color:var(--bad)}
+.tile.out{opacity:.45;filter:grayscale(1)}
+.tile.me{box-shadow:0 0 0 3px var(--a2)}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes topple{to{transform:rotate(90deg) translateY(6px);filter:grayscale(1);opacity:.6}}
+.survHead{display:flex;align-items:baseline;justify-content:center;gap:14px;flex-wrap:wrap;text-align:center}
+.survHead .big b{color:var(--good);font-family:var(--display)}
+.aliveChip{background:#143326;border:2px solid var(--good);color:var(--chalk);border-radius:999px;padding:3px 12px}
+.elimBox{border-radius:14px;padding:12px 16px;text-align:center;font-weight:900;font-size:clamp(17px,2.4vw,26px);background:rgba(239,106,85,.15);border:2px solid var(--bad)}
+.elimBox b{color:var(--bad)}
+.elimBox.saved{background:rgba(79,209,139,.12);border-color:var(--good)}
+.champs{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.champ{display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(180deg,#3a2a06,var(--panel));border:3px solid var(--gold);border-radius:20px;padding:18px 26px;min-width:0;animation:zoomIn .6s cubic-bezier(.2,.9,.3,1.3) both}
+.champ .crown{font-size:44px;line-height:1;animation:bob 1.2s ease-in-out infinite}
+.champ .av{font-size:80px;line-height:1}
+.champ b{font-family:var(--display);font-size:clamp(20px,3vw,32px);color:var(--gold);overflow-wrap:anywhere;text-align:center}
+.rankBox{max-width:700px;width:100%;margin:0 auto}
+.bigAv{font-size:90px;line-height:1}
+.avGrid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+@media (max-width:420px){.avGrid{grid-template-columns:repeat(4,1fr)}}
+.avGrid button{font-size:30px;padding:6px 0;border-radius:12px;background:var(--deep);border:3px solid transparent;line-height:1.2}
+.avGrid button[aria-pressed="true"]{border-color:var(--a2);background:#2a3a63}
+.person .cav{font-size:22px}
+.specBox{border:2px dashed var(--line);border-radius:14px;padding:12px;text-align:center;font-weight:800}
+.qtext.sdq,.sQ.sdq{box-shadow:0 0 0 5px var(--bad),0 0 34px rgba(239,106,85,.55)}
+.sdBadge{display:inline-flex;align-items:center;gap:6px;background:var(--bad);color:var(--ink);font-weight:900;border-radius:999px;padding:4px 12px;animation:pulse 1s ease-in-out infinite}
+.dblSplash.sd{background:radial-gradient(circle at 50% 45%,#3d0f0a 0%,rgba(11,18,34,.96) 65%)}
+.dblSplash.sd .x2{font-size:clamp(40px,10vw,110px);background:linear-gradient(180deg,#ffd0c4,#ef6a55 55%,#a8325a);-webkit-background-clip:text;background-clip:text}
+.podium.av{margin-top:4px}
+.pstep .pav{font-size:clamp(46px,7vw,80px);line-height:1}
+.pstep.p1 .pav{font-size:clamp(58px,9vw,104px);animation:bob 1.2s ease-in-out infinite}
+.pstep.p1 .medal{font-size:clamp(40px,6vw,60px);animation:bob 1.2s ease-in-out infinite}
+.pstep.p1 .block{box-shadow:0 0 30px rgba(224,168,30,.45)}
+.pstep small{text-align:center}
+@media (max-width:560px){.pstep .pav{font-size:38px}.pstep.p1 .pav{font-size:50px}}
+.stage{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:14px 10px;padding:40px 10px 18px;border-radius:20px;background:radial-gradient(120% 100% at 50% 100%,#24365f 0%,var(--ink) 75%);border:2px solid var(--line);min-height:200px;position:relative;overflow:hidden}
+.stage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:16px;background:#283247;border-top:3px solid #3d4a66}
+.fig{position:relative;display:flex;flex-direction:column;align-items:center;width:70px;z-index:1;transition:transform .7s cubic-bezier(.2,.9,.3,1.3),opacity .6s,margin .7s}
+.fig .figIn{display:flex;flex-direction:column;align-items:center;transform-origin:50% 100%}
+.fig .hd{font-size:34px;line-height:1;margin-bottom:-7px;position:relative;z-index:2;animation:bob 1.3s ease-in-out infinite}
+.fig svg{width:44px;height:58px;display:block}
+.fig .arm,.fig .leg{transform-box:fill-box;transform-origin:50% 8%}
+.fig .fn{font-size:12px;font-weight:900;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;position:relative;z-index:2}
+.fig .crw{position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:24px;opacity:0;transition:opacity .4s;z-index:3}
+.fig.me .fn{color:var(--a2)}
+.fig.dead .figIn{animation:die .8s ease-in forwards}
+.fig.dead .hd{animation:none}
+.fig.dead .fn{color:var(--mute);text-decoration:line-through}
+.fig.dead{opacity:.55}
+@keyframes die{0%{transform:none}30%{transform:translateY(-10px) rotate(-12deg)}100%{transform:rotate(90deg) translate(16px,-4px);filter:grayscale(1)}}
+.fboom{position:absolute;top:10px;left:50%;font-size:34px;pointer-events:none;z-index:4;animation:fboom 1.1s ease-out forwards}
+@keyframes fboom{0%{transform:translate(-50%,0) scale(.2);opacity:1}30%{transform:translate(-50%,-6px) scale(1.6);opacity:1}100%{transform:translate(-50%,-30px) scale(1);opacity:0}}
+.fskull{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:18px;z-index:3;animation:pulse 1.6s ease-in-out infinite}
+.stage{transition:padding .7s}
+.stage.won{padding-top:56px}
+.stage.gone{opacity:0;transform:scale(.96);transition:opacity .6s,transform .6s}
+.cemWrap h3{font-size:18px;color:var(--mute);text-align:center;margin-bottom:8px}
+.cemetery{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;max-width:1100px;margin:0 auto}
+@media (max-width:560px){.cemetery{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}}
+.grave{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--panel);border:2px solid var(--line);border-radius:14px 14px 8px 8px;padding:8px 4px 6px;text-align:center;min-width:0;animation:graveIn .45s cubic-bezier(.2,.9,.3,1.3) both}
+.grave .tomb{font-size:24px;line-height:1}
+.grave .gav{font-size:22px;line-height:1;filter:grayscale(1);opacity:.65}
+.grave b{font-size:12px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.grave small{font-size:11px;color:var(--mute);opacity:.8}
+.grave.me{border-color:var(--a2)}
+@keyframes graveIn{from{opacity:0;transform:translateY(-14px) scale(.8)}to{opacity:1;transform:none}}
+.pstep .fig{width:auto;margin-bottom:-4px}
+.pstep .fig .fn{display:none}
+.pstep .fig .figIn{transform:scale(1.25);transform-origin:50% 100%}
+.pstep.p1 .fig .figIn{transform:scale(1.55)}
+.pstep.p1 .fig{margin-top:64px}
+.podium.av .pstep .fig{order:-1}
+.podium.av .pstep .medal{font-size:28px;line-height:1;margin-top:6px}
+.podium.av .pstep.p1 .medal{font-size:34px}
+.pstep.p1 .fig.king .crw{top:-70px;font-size:30px}
+.pstep:not(.p1) .fig{margin-top:30px}
+.fig.king .crw{opacity:1;top:-30px;font-size:26px;animation:bob .6s ease-in-out infinite}
+.pstep.p1 .fig.dance .figIn{animation:boogieBig .55s ease-in-out infinite}
+@keyframes boogieBig{0%,100%{transform:scale(1.55) translateY(0) rotate(-9deg)}50%{transform:scale(1.55) translateY(-10px) rotate(9deg)}}
+.fig.winner{transform:scale(1.35);transform-origin:50% 100%;z-index:6;margin:0 16px}
+.fig.winner .crw{opacity:1;animation:bob .6s ease-in-out infinite}
+.fig.winner .fn{color:var(--gold)}
+.fig.dance .figIn{animation:boogie .55s ease-in-out infinite}
+.fig.dance .armL{animation:armL .28s ease-in-out infinite alternate}
+.fig.dance .armR{animation:armR .28s ease-in-out infinite alternate .14s}
+.fig.dance .legL{animation:legK .28s ease-in-out infinite alternate}
+.fig.dance .legR{animation:legK .28s ease-in-out infinite alternate-reverse}
+.fig.dance .hd{animation:headBob .55s ease-in-out infinite}
+@keyframes boogie{0%,100%{transform:translateY(0) rotate(-9deg)}50%{transform:translateY(-12px) rotate(9deg)}}
+@keyframes armL{from{transform:rotate(25deg)}to{transform:rotate(165deg)}}
+@keyframes armR{from{transform:rotate(-25deg)}to{transform:rotate(-165deg)}}
+@keyframes legK{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+@keyframes headBob{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg) translateY(-3px)}}
+@media (max-width:560px){.fig{width:54px}.fig .hd{font-size:27px}.fig svg{width:34px;height:45px}.fig .fn{max-width:54px;font-size:11px}.fig.winner{transform:scale(1.25);margin:0 12px}.stage.won{padding-top:44px}}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+@keyframes vroom{50%{transform:translateY(-1.5px)}}
+.runner .rn{position:absolute;top:50%;transform:translateY(-50%);left:calc(100% + 6px);white-space:nowrap;font-weight:800;font-size:15px;background:rgba(11,18,34,.8);color:var(--chalk);padding:2px 9px;border-radius:999px;max-width:13em;overflow:hidden;text-overflow:ellipsis}
+.runner.flip .rn{left:auto;right:calc(100% + 6px)}
+.lane.me .track{box-shadow:0 0 0 3px var(--a2)}
+.lane.me .pos{color:var(--chalk)}
+.raceHead{display:flex;justify-content:space-between;color:var(--mute);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding-left:3.6em;padding-right:6em}
+@media (max-width:560px){
+  .lane{grid-template-columns:2em minmax(0,1fr) 3.8em;gap:6px}
+  .lane .pos{font-size:16px}.lane .lpts{font-size:15px}
+  .track{height:36px}.car{width:50px;height:25px}
+  .track{--carw:66px}
+  .runner .rn{font-size:13px;max-width:8.5em}
+  .raceHead{padding-left:2.6em;padding-right:4.4em}
+}
+.overlay{position:fixed;inset:0;background:rgba(6,10,20,.92);display:grid;place-items:center;z-index:40;padding:16px;cursor:pointer}
+.overlay .inner{text-align:center;display:flex;flex-direction:column;gap:12px}
+.overlay .bigPin{font-size:clamp(90px,22vw,260px);color:var(--a2)}
+
+/* ---------- celular del estudiante ---------- */
+.phone{max-width:520px;margin:0 auto;width:100%;min-height:100vh;min-height:100dvh;padding-inline:16px;padding-block:18px;display:flex;flex-direction:column;gap:16px}
+.phone .box{gap:12px}
+.join label{font-size:14px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+.join input{width:100%;font-size:20px;padding:12px}
+.join .codeIn{font-family:var(--display);font-weight:800;letter-spacing:.35em;text-align:center;font-size:34px;color:var(--a2)}
+.hello{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;padding-block:30px}
+.hello .me{font-family:var(--display);font-size:34px;font-weight:800;overflow-wrap:anywhere}
+.sHead{display:flex;align-items:center;gap:10px;font-weight:900}
+.sBar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.sBar i{display:block;height:100%;width:100%;background:var(--a2);transition:width .25s linear}
+.pad{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:320px}
+.pad button{border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px;font-size:18px;font-weight:900;line-height:1.2;min-height:140px}
+.pad button .shape{width:54px;height:54px}
+.pad button span{overflow-wrap:anywhere}
+.pad.two{grid-template-columns:1fr}
+.sQ{background:var(--chalk);color:var(--ink);border-radius:16px;padding:16px;font-family:var(--display);font-weight:800;font-size:21px;line-height:1.2;overflow-wrap:anywhere}
+.sQ.small{font-size:16px;padding:12px 14px}
+.sOpts{display:flex;flex-direction:column;gap:8px}
+.sOpt{display:flex;align-items:center;gap:10px;border-radius:12px;padding:10px 12px;font-weight:800;background:var(--panel);border:3px solid transparent;overflow-wrap:anywhere}
+.sOpt .shape{width:24px;height:24px}
+.sOpt .sw{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none}
+.sOpt .sw .shape{width:20px;height:20px}
+.sOpt.right{border-color:var(--good);background:#143326}
+.sOpt.wrong{border-color:var(--bad)}
+.sOpt .mk{margin-left:auto;font-size:20px;flex:none}
+.sOpt span.t{min-width:0}
+.bme{background:#2a3a63;border-radius:10px;padding-inline:8px;margin-inline:-8px}
+.verdict{border-radius:20px;padding:30px 20px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.verdict.ok{background:var(--good);color:var(--ink)}
+.verdict.no{background:var(--bad);color:var(--ink)}
+.verdict.none{background:var(--panel)}
+.verdict .ic{font-size:64px;line-height:1}
+.verdict h2{font-size:34px}
+.verdict .plus{font-family:var(--display);font-size:30px;font-weight:800}
+.stat{display:flex;justify-content:space-between;gap:12px;font-size:18px;font-weight:800}
+.stat b{font-family:var(--display);font-size:24px;font-variant-numeric:tabular-nums}
+.sent{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-block:40px}
+.sent .tile{width:120px;height:120px;border-radius:24px;display:grid;place-items:center}
+.sent .tile .shape{width:60px;height:60px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   EL ÚLTIMO EN PIE PROFE ERICKA — multijugador con Firebase Realtime Database
+   Igual que el STOP: la compu de la profe es la "central"
+   (lleva el tiempo y los puntos); Firebase solo lleva los mensajes.
+   Usa el mismo proyecto de Firebase del STOP.
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBkALD5JhwPaACsuUAJ2pfqOoVTPEqm2xI",
+  authDomain: "stop-profe-ericka.firebaseapp.com",
+  databaseURL: "https://stop-profe-ericka-default-rtdb.firebaseio.com",
+  projectId: "stop-profe-ericka",
+  storageBucket: "stop-profe-ericka.firebasestorage.app",
+  messagingSenderId: "816670586894",
+  appId: "1:816670586894:web:1bfc34b4447d9507f6645f"
+};
+
+const clean = d => JSON.parse(JSON.stringify(d === undefined ? null : d));
+const NET = {
+  db: null,
+  init(){
+    if(typeof firebase === "undefined") return false;
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    this.db = firebase.database();
+    return true;
+  },
+  room(code){ return this.db.ref("rooms/" + code); },
+  onConnected(fn){ this.db.ref(".info/connected").on("value", s => fn(!!s.val())); }
+};
+class FbConn{
+  constructor(code, cid){ this.code = code; this.cid = cid; this.open = true; }
+  send(d){ if(!this.open) return; try{ NET.room(this.code).child("inbox/" + this.cid).push(clean(d)); }catch(e){ console.error(e); } }
+  close(){ this.open = false; }
+}
+
+const GAME = "ultimo";
+const ONLINE_MS = 12000;
+const TIMES = [10,15,20,30,45,60,90,120];
+const LETTERS = "ABCD";
+const SHAPES = [
+  '<svg class="shape" viewBox="0 0 40 40" aria-hidden="true"><polygon points="20,4 37,35 3,35" fill="currentColor"/></svg>',
+  '<svg class="shape" viewBox="0 0 40 40" aria-hidden="true"><polygon points="20,3 37,20 20,37 3,20" fill="currentColor"/></svg>',
+  '<svg class="shape" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="currentColor"/></svg>',
+  '<svg class="shape" viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="5" width="30" height="30" rx="3" fill="currentColor"/></svg>'
+];
+const SHAPE_NAMES = ["triángulo","rombo","círculo","cuadrado"];
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ls = {
+  get(k,d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+const ss = {
+  get(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ sessionStorage.setItem(k, v); }catch(e){} }
+};
+const app = $("app");
+let toastT;
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2600); }
+let audio=null;
+function beep(f,ms,type){ try{ audio = audio || new (window.AudioContext||window.webkitAudioContext)(); const o=audio.createOscillator(), g=audio.createGain(); o.type=type||"sine"; o.frequency.value=f; g.gain.value=.08; o.connect(g); g.connect(audio.destination); o.start(); g.gain.exponentialRampToValueAtTime(.0001, audio.currentTime+ms/1000); o.stop(audio.currentTime+ms/1000); }catch(e){} }
+function armButton(btn, label, action, armedLabel){
+  btn.onclick = () => {
+    if(btn.dataset.armed){ delete btn.dataset.armed; btn.textContent = label; action(); return; }
+    btn.dataset.armed = "1"; btn.textContent = armedLabel || "¿Seguro? Toque otra vez";
+    setTimeout(() => { if(btn.dataset.armed){ delete btn.dataset.armed; btn.textContent = label; } }, 3000);
+  };
+}
+
+/* ============================================================
+   ACOMODAR PREGUNTAS PEGADAS
+   Acepta casi cualquier forma:
+     1. ¿Pregunta?            ¿Pregunta?; opción; opción; opción; B
+     a) opción                (una pregunta por línea, con ;)
+     b) opción
+   Si una opción lleva * al inicio o al final, se marca como correcta.
+   ============================================================ */
+const OPT_PREFIX = /^\s*(?:[a-dA-D]\s*[\)\.\-:]|[-•·▪●○]|\(\s*[a-dA-D]\s*\))\s*/;
+const Q_PREFIX = /^\s*(?:(?:pregunta|preg\.?)\s*\d+\s*[\)\.\-:]?|\d+\s*[\)\.\-:])\s*/i;
+function blankQ(){ return { q:"", a:["","","",""], c:-1, t:20 }; }
+// quita la marca de correcta (* al inicio o al final, ✓, (x)) y la viñeta o letra
+function readOpt(raw){
+  let star = false, s = raw.trim();
+  s = s.replace(/^\*+\s*/, () => { star = true; return ""; });
+  s = s.replace(OPT_PREFIX, "");
+  s = s.replace(/^\*+\s*/, () => { star = true; return ""; });
+  s = s.replace(/\s*(?:\*+|\(\s*(?:x|correcta)\s*\)|✓|✔)\s*$/i, () => { star = true; return ""; });
+  return { s: s.trim(), star };
+}
+function parseQuestions(text){
+  const out = [], warn = [];
+  const lines = String(text||"").replace(/\r/g,"").split("\n");
+  let cur = null, blockStart = true;
+  const nOpts = q => q.a.filter(x => x).length;
+  const push = () => { if(cur && cur.q) out.push(cur); cur = null; };
+  const newQ = line => { push(); cur = blankQ(); cur.q = line.replace(Q_PREFIX, "").trim(); };
+  const addOpt = line => {
+    const o = readOpt(line); if(!o.s) return;
+    const n = nOpts(cur);
+    if(n >= 4){ if(!cur.warned){ cur.warned = 1; warn.push("«" + cur.q.slice(0,40) + "» tenía más de 4 opciones; dejé las primeras 4."); } return; }
+    cur.a[n] = o.s; if(o.star) cur.c = n;
+  };
+  for(const raw of lines){
+    const line = raw.trim();
+    if(!line){ blockStart = true; continue; }
+    // formato de una línea: pregunta; opción; opción; ... ; letra correcta (opcional)
+    if((line.match(/;/g)||[]).length >= 2){
+      push();
+      const p = line.split(";").map(x => x.trim()).filter(Boolean);
+      const q = blankQ(); q.q = p[0].replace(Q_PREFIX, "").trim();
+      let rest = p.slice(1), letter = -1;
+      const last = (rest[rest.length-1]||"").toUpperCase();
+      if(/^[ABCD]$/.test(last)){ letter = LETTERS.indexOf(last); rest = rest.slice(0,-1); }
+      if(rest.length > 4) warn.push("«" + q.q.slice(0,40) + "» tenía más de 4 opciones; dejé las primeras 4.");
+      rest.slice(0,4).forEach((x,i) => { const o = readOpt(x); q.a[i] = o.s; if(o.star) q.c = i; });
+      if(letter >= 0 && letter < Math.min(rest.length,4)) q.c = letter;
+      if(q.q) out.push(q);
+      blockStart = true; continue;
+    }
+    const bare = line.replace(/^\*+\s*/, "");
+    const isOpt = OPT_PREFIX.test(bare) && !Q_PREFIX.test(bare) && !/\?\s*$/.test(line);
+    const looksQ = /\?\s*$/.test(line) || /^¿/.test(line) || Q_PREFIX.test(line);
+    if(!cur){ if(isOpt) continue; newQ(line); }
+    else if(isOpt) addOpt(line);
+    else if(looksQ) newQ(line);
+    else if(nOpts(cur) === 0){ if(blockStart) newQ(line); else addOpt(line); }
+    else if(blockStart || nOpts(cur) >= 4) newQ(line);
+    else addOpt(line);
+    blockStart = false;
+  }
+  push();
+  out.forEach(q => { delete q.warned; if(nOpts(q) < 2) warn.push("«" + q.q.slice(0,40) + "» tiene menos de 2 opciones; complétela abajo."); });
+  return { qs: out, warn };
+}
+const qReady = q => q.q.trim() && q.a.filter(o => o.trim()).length >= 2 && q.c >= 0 && (q.a[q.c]||"").trim();
+
+/* ============================================================
+   QUIZZES LISTOS — la primera opción de cada pregunta es la correcta;
+   al cargarlos se revuelven las opciones.
+   ============================================================ */
+const PACKS = [
+ { id:"general", tag:"Cultura general", title:"Cultura general", qs:[
+  ["¿Quién pintó la Mona Lisa?", ["Leonardo da Vinci","Miguel Ángel","Pablo Picasso","Vincent van Gogh"]],
+  ["¿Cuál es el océano más grande del mundo?", ["Pacífico","Atlántico","Índico","Ártico"]],
+  ["¿Cuántos días tiene un año bisiesto?", ["366","365","364","360"]],
+  ["¿Quién escribió «Don Quijote de la Mancha»?", ["Miguel de Cervantes","Gabriel García Márquez","Lope de Vega","Pablo Neruda"]],
+  ["¿Cuál es el planeta más grande del sistema solar?", ["Júpiter","Saturno","Neptuno","Tierra"]],
+  ["¿En qué país están las pirámides de Giza?", ["Egipto","México","Perú","Grecia"]],
+  ["¿Cuántos lados tiene un hexágono?", ["6","5","7","8"]],
+  ["¿Qué idioma tiene más hablantes nativos en el mundo?", ["Chino mandarín","Inglés","Español","Hindi"]],
+  ["¿Cada cuántos años se celebran los Juegos Olímpicos de verano?", ["4","2","3","5"]],
+  ["¿Qué metal precioso tiene el símbolo químico Au?", ["Oro","Plata","Platino","Cobre"]],
+  ["¿Cuántos colores tiene el arcoíris?", ["7","6","5","8"]],
+  ["¿Quién escribió «Cien años de soledad»?", ["Gabriel García Márquez","Mario Vargas Llosa","Julio Cortázar","Isabel Allende"]],
+  ["¿Cuántos jugadores de un equipo de fútbol están en la cancha?", ["11","10","9","12"]],
+  ["¿Cuál es el animal terrestre más rápido?", ["Guepardo","León","Caballo","Gacela"]],
+  ["¿Qué número romano representa el 50?", ["L","C","X","D"]],
+  ["¿Quién compuso la Novena Sinfonía con el «Himno a la alegría»?", ["Ludwig van Beethoven","Wolfgang Amadeus Mozart","Johann Sebastian Bach","Frédéric Chopin"]],
+  ["¿Cuál es el país con más habitantes del mundo?", ["India","China","Estados Unidos","Indonesia"]],
+  ["¿Qué instrumento tiene 88 teclas?", ["Piano","Guitarra","Violín","Flauta"]],
+  ["¿En qué ciudad está la Torre Eiffel?", ["París","Londres","Roma","Madrid"]],
+  ["¿Cuánto es 9 × 7?", ["63","56","72","81"]]
+ ]},
+ { id:"geo", tag:"Cultura general", title:"Geografía del mundo", qs:[
+  ["¿Cuál es la capital de Australia?", ["Canberra","Sídney","Melbourne","Perth"]],
+  ["¿Qué país tiene forma de bota?", ["Italia","España","Grecia","Portugal"]],
+  ["¿Cuál es el país más grande del mundo por territorio?", ["Rusia","Canadá","China","Estados Unidos"]],
+  ["¿En qué país está Machu Picchu?", ["Perú","Bolivia","Ecuador","Chile"]],
+  ["¿Cuál es la montaña más alta del mundo?", ["Everest","K2","Aconcagua","Kilimanjaro"]],
+  ["¿Cuál es la capital de Canadá?", ["Ottawa","Toronto","Montreal","Vancouver"]],
+  ["¿En qué continente está Egipto?", ["África","Asia","Europa","Oceanía"]],
+  ["¿Qué canal une los océanos Atlántico y Pacífico en América?", ["Canal de Panamá","Canal de Suez","Canal de la Mancha","Canal de Corinto"]],
+  ["¿Cuál es el continente más poblado?", ["Asia","África","América","Europa"]],
+  ["¿Cuál es la capital de Brasil?", ["Brasilia","Río de Janeiro","São Paulo","Salvador"]],
+  ["¿Cuál es la capital de Japón?", ["Tokio","Kioto","Osaka","Seúl"]],
+  ["¿Qué río atraviesa Egipto?", ["Nilo","Amazonas","Danubio","Misisipi"]],
+  ["¿Cuál es el desierto cálido más grande del mundo?", ["Sahara","Gobi","Atacama","Kalahari"]],
+  ["¿En qué país está la Gran Muralla?", ["China","Japón","India","Mongolia"]],
+  ["¿Cuál es la capital de Argentina?", ["Buenos Aires","Córdoba","Rosario","Montevideo"]],
+  ["¿En qué país está el monte Kilimanjaro?", ["Tanzania","Kenia","Etiopía","Sudáfrica"]],
+  ["¿Cuál es el país más pequeño del mundo?", ["Ciudad del Vaticano","Mónaco","San Marino","Liechtenstein"]],
+  ["¿Cuál es la capital de México?", ["Ciudad de México","Guadalajara","Monterrey","Cancún"]],
+  ["¿Cuántos países forman Centroamérica?", ["7","5","6","8"]],
+  ["¿Qué cordillera recorre Sudamérica de norte a sur?", ["Los Andes","Los Alpes","El Himalaya","Las Rocosas"]]
+ ]},
+ { id:"ciencia", tag:"Cultura general", title:"Ciencia y naturaleza", qs:[
+  ["¿Qué gas absorben las plantas para hacer la fotosíntesis?", ["Dióxido de carbono","Oxígeno","Nitrógeno","Hidrógeno"]],
+  ["¿Cuál es la fórmula química del agua?", ["H₂O","CO₂","O₂","NaCl"]],
+  ["¿Cuál es el planeta más cercano al Sol?", ["Mercurio","Venus","Marte","Tierra"]],
+  ["¿Cuántos huesos tiene el cuerpo humano adulto?", ["206","106","306","186"]],
+  ["¿Cuál es el órgano más grande del cuerpo humano?", ["La piel","El hígado","El corazón","El cerebro"]],
+  ["¿Cuál es el animal más grande que existe?", ["Ballena azul","Elefante africano","Tiburón ballena","Jirafa"]],
+  ["¿Qué científico formuló la ley de la gravitación universal?", ["Isaac Newton","Albert Einstein","Galileo Galilei","Nikola Tesla"]],
+  ["¿Cuál es el gas más abundante en el aire?", ["Nitrógeno","Oxígeno","Dióxido de carbono","Argón"]],
+  ["¿A qué temperatura hierve el agua al nivel del mar?", ["100 °C","90 °C","80 °C","120 °C"]],
+  ["¿Cuántas cavidades tiene el corazón humano?", ["4","2","3","5"]],
+  ["¿Qué planeta es conocido como el planeta rojo?", ["Marte","Júpiter","Venus","Saturno"]],
+  ["¿Qué parte de la planta absorbe el agua del suelo?", ["La raíz","La hoja","La flor","El tallo"]],
+  ["¿Cuántos planetas tiene el sistema solar?", ["8","9","7","10"]],
+  ["¿Qué tipo de animal es la ballena?", ["Mamífero","Pez","Reptil","Anfibio"]],
+  ["¿Cuál es el símbolo químico del oxígeno?", ["O","Ox","Og","Om"]],
+  ["¿Qué científico propuso la teoría de la relatividad?", ["Albert Einstein","Isaac Newton","Marie Curie","Charles Darwin"]],
+  ["¿Qué vitamina produce el cuerpo al recibir la luz del sol?", ["Vitamina D","Vitamina C","Vitamina A","Vitamina B12"]],
+  ["¿En qué estado está el agua cuando es hielo?", ["Sólido","Líquido","Gaseoso","Plasma"]],
+  ["¿Quién propuso la teoría de la evolución por selección natural?", ["Charles Darwin","Gregor Mendel","Louis Pasteur","Isaac Newton"]],
+  ["¿Qué molécula guarda la información genética?", ["ADN","ATP","Glucosa","Hemoglobina"]]
+ ]},
+ { id:"historia", tag:"Cultura general", title:"Historia universal", qs:[
+  ["¿En qué año llegó Cristóbal Colón a América?", ["1492","1500","1521","1453"]],
+  ["¿Quién fue el primer ser humano en pisar la Luna?", ["Neil Armstrong","Yuri Gagarin","Buzz Aldrin","Michael Collins"]],
+  ["¿En qué año comenzó la Segunda Guerra Mundial?", ["1939","1914","1945","1929"]],
+  ["¿En qué año cayó el Muro de Berlín?", ["1989","1991","1979","1961"]],
+  ["¿En qué año comenzó la Revolución francesa?", ["1789","1776","1810","1848"]],
+  ["¿Cuál era la capital del Imperio inca?", ["Cusco","Lima","Quito","Tenochtitlan"]],
+  ["¿Qué civilización construyó Chichén Itzá?", ["Maya","Azteca","Inca","Olmeca"]],
+  ["¿Quién fue el primer presidente de Estados Unidos?", ["George Washington","Abraham Lincoln","Thomas Jefferson","John Adams"]],
+  ["¿Qué inventó Johannes Gutenberg?", ["La imprenta de tipos móviles","El telescopio","La brújula","El teléfono"]],
+  ["¿Qué barco se hundió en 1912 tras chocar con un iceberg?", ["Titanic","Lusitania","Britannic","Santa María"]],
+  ["¿Qué imperio construyó el Coliseo?", ["El Imperio romano","El Imperio griego","El Imperio egipcio","El Imperio persa"]],
+  ["¿Qué líder francés fue derrotado en Waterloo en 1815?", ["Napoleón Bonaparte","Luis XIV","Carlomagno","Charles de Gaulle"]],
+  ["¿En qué año terminó la Segunda Guerra Mundial?", ["1945","1944","1939","1950"]],
+  ["¿Quién lideró la independencia de la India con la no violencia?", ["Mahatma Gandhi","Nelson Mandela","Martin Luther King","Jawaharlal Nehru"]],
+  ["¿En qué año comenzó la Primera Guerra Mundial?", ["1914","1918","1905","1939"]],
+  ["¿Qué país lanzó el primer satélite artificial, el Sputnik?", ["La Unión Soviética","Estados Unidos","China","Alemania"]],
+  ["¿Cuál era la capital del Imperio azteca?", ["Tenochtitlan","Cusco","Tikal","Teotihuacan"]],
+  ["¿Quién fue el primer presidente negro de Sudáfrica?", ["Nelson Mandela","Desmond Tutu","Kofi Annan","Thabo Mbeki"]],
+  ["¿Qué ciudad fue sepultada por la erupción del Vesubio en el año 79?", ["Pompeya","Atenas","Cartago","Esparta"]],
+  ["¿Qué pueblo antiguo construyó las pirámides de Giza?", ["Los egipcios","Los mayas","Los romanos","Los griegos"]]
+ ]},
+ { id:"cr-historia", tag:"Costa Rica", title:"Historia de Costa Rica", qs:[
+  ["¿En qué fecha se celebra la independencia de Costa Rica?", ["15 de septiembre","25 de julio","12 de octubre","1 de diciembre"]],
+  ["¿En qué año se independizó Centroamérica de España?", ["1821","1810","1848","1856"]],
+  ["¿En qué año abolió José Figueres Ferrer el ejército?", ["1948","1956","1821","1970"]],
+  ["¿Quién es el héroe nacional de Costa Rica?", ["Juan Santamaría","Juan Mora Fernández","José Figueres Ferrer","Braulio Carrillo"]],
+  ["¿Contra quién luchó Costa Rica en la Campaña Nacional de 1856?", ["William Walker y los filibusteros","El ejército español","El ejército de Panamá","Los piratas ingleses"]],
+  ["¿En qué batalla murió Juan Santamaría?", ["Batalla de Rivas","Batalla de Santa Rosa","Batalla de Ochomogo","Batalla de San Jacinto"]],
+  ["¿Qué se celebra el 25 de julio?", ["La Anexión del Partido de Nicoya","La independencia","El Día de la Madre","La abolición del ejército"]],
+  ["¿Cuál fue la primera capital de Costa Rica?", ["Cartago","San José","Heredia","Alajuela"]],
+  ["¿Qué costarricense recibió el Premio Nobel de la Paz en 1987?", ["Óscar Arias Sánchez","José Figueres Ferrer","Rodrigo Carazo","Luis Alberto Monge"]],
+  ["¿Quién fue el primer jefe de Estado de Costa Rica?", ["Juan Mora Fernández","Juan Rafael Mora Porras","Braulio Carrillo","José María Castro Madriz"]],
+  ["¿Quién era presidente de Costa Rica durante la Campaña Nacional de 1856?", ["Juan Rafael Mora Porras","Braulio Carrillo","Tomás Guardia","Juan Mora Fernández"]],
+  ["¿Qué se conmemora el 11 de abril?", ["La Batalla de Rivas y Juan Santamaría","La independencia","La Anexión de Nicoya","El Día de las Culturas"]],
+  ["¿Qué se celebra el 1 de diciembre?", ["La abolición del ejército","La independencia","La Navidad","El Día del Trabajador"]],
+  ["¿En qué año se promulgó la Constitución Política vigente?", ["1949","1948","1821","1871"]],
+  ["¿Qué institución creada en 1941 brinda los servicios de salud pública?", ["La CCSS","El ICE","El INS","El AyA"]],
+  ["¿Qué presidente impulsó las Garantías Sociales en la década de 1940?", ["Rafael Ángel Calderón Guardia","José Figueres Ferrer","Óscar Arias Sánchez","Ricardo Jiménez Oreamuno"]],
+  ["¿Qué batalla de 1856 se peleó en Guanacaste el 20 de marzo?", ["Batalla de Santa Rosa","Batalla de Rivas","Batalla de Ochomogo","Batalla de La Trinidad"]],
+  ["¿Qué cultivo impulsó la economía costarricense en el siglo XIX?", ["El café","El trigo","El algodón","El cacao"]],
+  ["¿Quién fue la primera mujer presidenta de Costa Rica?", ["Laura Chinchilla","Epsy Campbell","Karen Olsen","Margarita Penón"]],
+  ["¿En qué año se inauguró el Teatro Nacional?", ["1897","1921","1850","1948"]]
+ ]},
+ { id:"cr-geo", tag:"Costa Rica", title:"Geografía y naturaleza de Costa Rica", qs:[
+  ["¿Cuántas provincias tiene Costa Rica?", ["7","5","6","8"]],
+  ["¿Cuál es la capital de Costa Rica?", ["San José","Cartago","Alajuela","Heredia"]],
+  ["¿Con qué país limita Costa Rica al norte?", ["Nicaragua","Panamá","Honduras","Colombia"]],
+  ["¿Cuál es el punto más alto de Costa Rica?", ["Cerro Chirripó","Volcán Irazú","Volcán Poás","Cerro de la Muerte"]],
+  ["¿En qué provincia está el volcán Arenal?", ["Alajuela","Guanacaste","Cartago","Heredia"]],
+  ["¿Qué isla costarricense es Patrimonio Natural de la Humanidad?", ["Isla del Coco","Isla San Lucas","Isla Tortuga","Isla Uvita"]],
+  ["¿Cuál es la provincia más pequeña de Costa Rica?", ["Heredia","Cartago","San José","Limón"]],
+  ["¿Cuál es la provincia más grande de Costa Rica?", ["Puntarenas","Guanacaste","Alajuela","Limón"]],
+  ["¿Qué parque nacional del Caribe es famoso por el desove de tortugas?", ["Tortuguero","Manuel Antonio","Corcovado","Santa Rosa"]],
+  ["¿Qué aguas bañan las costas de Costa Rica?", ["El mar Caribe y el océano Pacífico","El océano Atlántico y el Índico","Solo el océano Pacífico","El mar Caribe y el Mediterráneo"]],
+  ["¿Con qué país limita Costa Rica al sureste?", ["Panamá","Nicaragua","Colombia","Honduras"]],
+  ["¿En qué provincia está el volcán Irazú?", ["Cartago","San José","Heredia","Limón"]],
+  ["¿En qué provincia está el Parque Nacional Manuel Antonio?", ["Puntarenas","Guanacaste","Limón","San José"]],
+  ["¿Cuál es la capital de la provincia de Guanacaste?", ["Liberia","Nicoya","Santa Cruz","Cañas"]],
+  ["¿En qué península está el Parque Nacional Corcovado?", ["Península de Osa","Península de Nicoya","Península de Yucatán","Península de Burica"]],
+  ["¿Qué península comparten Guanacaste y Puntarenas?", ["Península de Nicoya","Península de Osa","Península de Yucatán","Península de Burica"]],
+  ["¿En qué provincia está el volcán Poás?", ["Alajuela","Cartago","Heredia","Guanacaste"]],
+  ["¿Qué lugar de Puntarenas es famoso por su bosque nuboso?", ["Monteverde","Jacó","Quepos","Golfito"]],
+  ["¿Qué río marca parte de la frontera con Nicaragua?", ["Río San Juan","Río Reventazón","Río Tárcoles","Río Pacuare"]],
+  ["¿En qué región vive la mayor parte de la población?", ["El Valle Central","La península de Osa","La zona norte","El Caribe sur"]]
+ ]},
+ { id:"cr-cultura", tag:"Costa Rica", title:"Símbolos y tradiciones de Costa Rica", qs:[
+  ["¿Cuál es la flor nacional de Costa Rica?", ["Guaria morada","Flor de itabo","Veranera","Margarita"]],
+  ["¿Cuál es el árbol nacional?", ["Guanacaste","Roble sabana","Ceiba","Cedro"]],
+  ["¿Cuál es el ave nacional?", ["Yigüirro","Quetzal","Tucán","Lapa roja"]],
+  ["¿Cómo se llama la moneda de Costa Rica?", ["Colón","Córdoba","Lempira","Balboa"]],
+  ["¿Qué símbolo nacional representa el trabajo costarricense?", ["La carreta típica","La marimba","El yigüirro","El escudo"]],
+  ["¿Qué día es la romería a Cartago por la Virgen de los Ángeles?", ["2 de agosto","15 de agosto","8 de diciembre","25 de julio"]],
+  ["¿Qué día se celebra el Día de la Madre en Costa Rica?", ["15 de agosto","10 de mayo","15 de septiembre","2 de agosto"]],
+  ["¿Cuál es el instrumento musical nacional?", ["La marimba","La guitarra","El acordeón","El tambor"]],
+  ["¿Cuál es el baile típico nacional?", ["El Punto guanacasteco","La cumbia","La salsa","El tamborito"]],
+  ["¿Quién escribió la letra del Himno Nacional?", ["José María Zeledón","Manuel María Gutiérrez","Aquileo J. Echeverría","Joaquín García Monge"]],
+  ["¿Cuál es el desayuno típico hecho con arroz y frijoles?", ["Gallo pinto","Casado","Olla de carne","Chifrijo"]],
+  ["¿Quién diseñó la bandera de Costa Rica en 1848?", ["Pacífica Fernández Oreamuno","Emma Gamboa","Carmen Lyra","Ángela Acuña"]],
+  ["¿Qué significa la expresión «pura vida»?", ["Que todo está bien; también es un saludo","Que algo es muy caro","Que alguien está enfermo","Que va a llover"]],
+  ["¿Qué comida navideña se envuelve en hoja de plátano?", ["El tamal","El gallo pinto","El arroz con leche","El picadillo"]],
+  ["¿Qué pueblo de Alajuela es famoso por sus carretas pintadas?", ["Sarchí","Grecia","Atenas","Zarcero"]],
+  ["¿Qué día se hace el desfile de faroles?", ["14 de septiembre","15 de septiembre","25 de julio","12 de octubre"]],
+  ["¿Cómo se llaman los personajes gigantes de las fiestas populares?", ["Mascaradas","Piñatas","Comparsas","Marionetas"]],
+  ["¿Qué plato lleva frijoles, chicharrón, arroz y pico de gallo en un vaso?", ["Chifrijo","Casado","Gallo pinto","Patacones"]],
+  ["¿Qué pueblo indígena realiza el Juego de los Diablitos?", ["Boruca","Bribri","Maleku","Chorotega"]],
+  ["¿Quién escribió «Cuentos de mi tía Panchita»?", ["Carmen Lyra","Carlos Luis Fallas","Aquileo J. Echeverría","Joaquín Gutiérrez"]]
+ ]},
+ { id:"cr-dichos", tag:"Costa Rica", title:"Dichos y palabras ticas", qs:[
+  ["¿Qué significa «estar de chicha»?", ["Estar enojado","Estar muy feliz","Tener hambre","Estar cansado"]],
+  ["¿Qué significa «jalarse una torta»?", ["Cometer un error grave","Comer mucho","Hacer un pastel","Llegar tarde"]],
+  ["¿Qué significa «tuanis»?", ["Algo muy bueno o bonito","Algo aburrido","Algo muy caro","Algo peligroso"]],
+  ["¿Qué es el «brete»?", ["El trabajo","La fiesta","El colegio","La comida"]],
+  ["Si alguien «está rajando», ¿qué hace?", ["Presume o alardea","Se ríe mucho","Está llorando","Está estudiando"]],
+  ["¿Cuándo se usa la palabra «diay»?", ["Como «pues» o «¿y entonces?»","Para despedirse","Para pedir perdón","Para dar las gracias"]],
+  ["¿Qué es un «chunche»?", ["Cualquier cosa u objeto","Un tipo de comida","Un perro pequeño","Un apodo cariñoso"]],
+  ["¿Qué significa «al chile»?", ["De verdad, en serio","Con mucho picante","Muy rápido","A escondidas"]],
+  ["Si alguien «está salado», ¿qué le pasa?", ["Tiene mala suerte","Tiene sed","Está enfermo","Está de vacaciones"]],
+  ["¿Para qué se dice «¡upe!» al llegar a una casa?", ["Para llamar a los de adentro","Para despedirse","Para pedir comida","Para asustar"]],
+  ["¿Qué es una «mejenga»?", ["Un partido de fútbol informal","Una fiesta de cumpleaños","Un baile típico","Una comida típica"]],
+  ["En Costa Rica, ¿qué es un «chorizo»?", ["Un negocio tramposo o ilegal","Un regalo","Un premio","Un trabajo bien hecho"]],
+  ["¿Qué significa «echar el cuento»?", ["Coquetear o enamorar a alguien","Leer un libro","Contar un chiste","Mentir en un examen"]],
+  ["¿Qué significa «hacerse el maje»?", ["Hacerse el tonto o disimular","Ser muy valiente","Trabajar mucho","Ser el jefe"]],
+  ["Alguien está «más perdido que el hijo de Lindbergh». ¿Cómo está?", ["Muy perdido o desubicado","Muy feliz","Muy enojado","Muy cansado"]],
+  ["¿Qué es el «chante»?", ["La casa","El carro","El trabajo","La escuela"]],
+  ["¿Qué parte del cuerpo es la «jupa»?", ["La cabeza","La panza","Los pies","Las manos"]],
+  ["¿Qué es un «carajillo»?", ["Un niño","Un perro","Un viejito","Un policía"]],
+  ["En plata tica, ¿cuánto es un «rojo»?", ["Mil colones","Cien colones","Diez mil colones","Cinco colones"]],
+  ["En plata tica, ¿cuánto es una «teja»?", ["Cien colones","Mil colones","Quinientos colones","Diez colones"]]
+ ]},
+ { id:"cr-provincias", tag:"Costa Rica", title:"¿De qué provincia es?", qs:[
+  ["¿En qué provincia está el volcán Rincón de la Vieja?", ["Guanacaste","Alajuela","Puntarenas","Heredia"]],
+  ["¿En qué provincia está playa Tamarindo?", ["Guanacaste","Puntarenas","Limón","Alajuela"]],
+  ["¿En qué provincia está el aeropuerto Daniel Oduber?", ["Guanacaste","Alajuela","San José","Puntarenas"]],
+  ["¿En qué provincia está el aeropuerto Juan Santamaría?", ["Alajuela","San José","Heredia","Cartago"]],
+  ["¿En qué provincia está La Fortuna, al pie del volcán Arenal?", ["Alajuela","Guanacaste","Heredia","Puntarenas"]],
+  ["¿En qué provincia está Zarcero, famoso por sus figuras de ciprés?", ["Alajuela","Heredia","Cartago","San José"]],
+  ["¿En qué provincia está Cahuita?", ["Limón","Puntarenas","Guanacaste","Cartago"]],
+  ["¿En qué provincia está Puerto Viejo de Talamanca?", ["Limón","Heredia","Puntarenas","Alajuela"]],
+  ["¿En qué provincia está Guápiles?", ["Limón","Heredia","Alajuela","Cartago"]],
+  ["¿En qué provincia está Monteverde?", ["Puntarenas","Guanacaste","Alajuela","Heredia"]],
+  ["¿En qué provincia está la playa de Jacó?", ["Puntarenas","Guanacaste","San José","Limón"]],
+  ["¿En qué provincia está Golfito?", ["Puntarenas","Limón","San José","Guanacaste"]],
+  ["¿En qué provincia está la isla San Lucas?", ["Puntarenas","Guanacaste","Limón","Alajuela"]],
+  ["¿En qué provincia están las ruinas de Ujarrás?", ["Cartago","San José","Heredia","Limón"]],
+  ["¿En qué provincia está Turrialba?", ["Cartago","Limón","San José","Heredia"]],
+  ["¿En qué provincia está el valle de Orosi?", ["Cartago","San José","Alajuela","Limón"]],
+  ["¿En qué provincia está Barva?", ["Heredia","Alajuela","San José","Cartago"]],
+  ["¿En qué provincia está Sarapiquí?", ["Heredia","Alajuela","Limón","Cartago"]],
+  ["¿En qué provincia está Pérez Zeledón?", ["San José","Puntarenas","Cartago","Limón"]],
+  ["¿En qué provincia está Tarrazú, famoso por su café?", ["San José","Cartago","Heredia","Alajuela"]]
+ ]},
+ { id:"info", tag:"Informática", title:"Informática básica", qs:[
+  ["¿Qué significa CPU?", ["Unidad Central de Procesamiento","Computadora Personal Única","Control de Programas Universal","Centro de Poder Útil"]],
+  ["¿Cuántos bits tiene un byte?", ["8","4","16","32"]],
+  ["¿Cuál de estos es un sistema operativo?", ["Linux","Google Chrome","Microsoft Word","Excel"]],
+  ["¿Qué memoria se borra al apagar la computadora?", ["RAM","Disco duro","ROM","Memoria USB"]],
+  ["¿Cuál de estos es un dispositivo de entrada?", ["Teclado","Monitor","Impresora","Parlantes"]],
+  ["¿Qué atajo de teclado sirve para copiar?", ["Ctrl + C","Ctrl + V","Ctrl + X","Ctrl + Z"]],
+  ["¿Qué atajo deshace la última acción?", ["Ctrl + Z","Ctrl + Y","Ctrl + P","Ctrl + A"]],
+  ["En el sistema binario de la computadora, ¿a cuántos bytes equivale 1 KB?", ["1024","512","2048","100"]],
+  ["¿Qué número decimal es 1010 en binario?", ["10","8","12","5"]],
+  ["¿Qué programa se usa principalmente para hojas de cálculo?", ["Excel","Word","PowerPoint","Paint"]],
+  ["¿Quién fundó Microsoft junto con Paul Allen?", ["Bill Gates","Steve Jobs","Mark Zuckerberg","Elon Musk"]],
+  ["¿Qué componente guarda los archivos aunque se apague la computadora?", ["El disco duro o SSD","La memoria RAM","El procesador","La tarjeta de video"]],
+  ["¿Cuál de estos es un navegador web?", ["Firefox","Excel","Windows","Photoshop"]],
+  ["¿Qué tecla deja escribiendo todo en mayúsculas?", ["Bloq Mayús","Shift","Tab","Alt"]],
+  ["¿Qué significa USB?", ["Universal Serial Bus","Unidad de Sistema Básico","Usuario Sin Bloqueo","Universal Sound Box"]],
+  ["¿Qué atajo de teclado sirve para pegar?", ["Ctrl + V","Ctrl + C","Ctrl + P","Ctrl + B"]],
+  ["¿Qué extensión tienen normalmente los documentos de Word?", [".docx",".xlsx",".pptx",".mp3"]],
+  ["¿Cuál de estos es un dispositivo de salida?", ["Monitor","Teclado","Mouse","Micrófono"]],
+  ["¿Qué es el hardware?", ["Las partes físicas de la computadora","Los programas instalados","Las páginas web","Las contraseñas"]],
+  ["¿Qué es el software?", ["Los programas y aplicaciones","Las partes físicas","Los cables","La pantalla"]]
+ ]},
+ { id:"seguridad", tag:"Informática", title:"Internet y seguridad digital", qs:[
+  ["¿Qué es el phishing?", ["Un engaño para robar datos haciéndose pasar por alguien confiable","Un antivirus","Un tipo de cable de red","Un navegador web"]],
+  ["¿Qué tipo de programa malicioso secuestra archivos y pide dinero?", ["Ransomware","Spyware","Adware","Firewall"]],
+  ["¿Qué significa la «S» en HTTPS?", ["Seguro (Secure)","Servidor","Sistema","Simple"]],
+  ["¿Cuál de estas contraseñas es más segura?", ["Tq7#lluvia!Rojo92","123456","contraseña","maria2010"]],
+  ["¿Qué hace un firewall (cortafuegos)?", ["Filtra qué tráfico de red se permite o se bloquea","Enfría el procesador","Acelera el internet","Hace copias de seguridad"]],
+  ["¿Qué es la verificación en dos pasos?", ["Pedir un segundo código además de la contraseña","Escribir la contraseña dos veces","Tener dos cuentas","Usar dos navegadores"]],
+  ["¿Qué sistema traduce nombres como google.com a direcciones IP?", ["DNS","USB","HTML","PDF"]],
+  ["¿Quién creó la World Wide Web?", ["Tim Berners-Lee","Bill Gates","Steve Jobs","Alan Turing"]],
+  ["Le llega «¡Ganó un premio! Haga clic aquí». ¿Qué debe hacer?", ["No abrir el enlace y reportarlo","Hacer clic rápido","Enviar sus datos","Reenviarlo a todos"]],
+  ["¿Qué es un troyano?", ["Un programa malicioso disfrazado de programa útil","Un antivirus gratuito","Una red Wi-Fi","Un tipo de memoria"]],
+  ["¿Qué es una dirección IP?", ["Un número que identifica a un dispositivo en una red","Un correo electrónico","Una contraseña","Un tipo de virus"]],
+  ["¿Qué hace un antivirus?", ["Detecta y elimina programas maliciosos","Acelera el internet","Borra las fotos","Carga la batería"]],
+  ["¿Qué es una copia de seguridad (respaldo)?", ["Una copia de archivos para recuperarlos si se pierden","Una contraseña nueva","Un tipo de virus","Una red Wi-Fi"]],
+  ["¿Qué es el ciberacoso?", ["Molestar o humillar a alguien por internet","Un juego en línea","Una red social","Un antivirus"]],
+  ["Alguien le pide su contraseña por mensaje. ¿Qué debe hacer?", ["No darla nunca","Darla si es amable","Darla si dice ser de la escuela","Publicarla"]],
+  ["¿Qué es más riesgoso hacer en una red Wi-Fi pública?", ["Entrar a su cuenta del banco","Leer noticias","Ver el clima","Buscar un mapa"]],
+  ["¿Qué es el spam?", ["Mensajes no deseados enviados en masa","Un tipo de memoria","Un navegador","Una red privada"]],
+  ["¿Qué significa «www»?", ["World Wide Web","World Web Window","Wide Wireless Web","Web World Wide"]],
+  ["¿Qué es una cookie en un sitio web?", ["Un pequeño archivo que guarda datos de su visita","Un virus muy peligroso","Un tipo de contraseña","Un programa para dibujar"]],
+  ["¿Qué es la huella digital en internet?", ["El rastro de información que dejamos al usar internet","Un lector de dedos","Un tipo de virus","Una foto de perfil"]]
+ ]},
+ { id:"web", tag:"Informática", title:"Programación y páginas web", qs:[
+  ["¿Qué significa HTML?", ["HyperText Markup Language","High Tech Modern Language","Home Tool Markup Language","Hyper Transfer Machine Language"]],
+  ["¿Qué etiqueta HTML crea un enlace?", ["<a>","<link>","<href>","<p>"]],
+  ["¿Qué etiqueta HTML muestra una imagen?", ["<img>","<pic>","<image>","<src>"]],
+  ["¿Para qué sirve CSS?", ["Para dar estilo y diseño a la página","Para guardar datos","Para crear bases de datos","Para conectarse a internet"]],
+  ["¿Qué propiedad CSS cambia el color del texto?", ["color","font-color","text-color","background"]],
+  ["¿Qué lenguaje se ejecuta en el navegador para dar interactividad?", ["JavaScript","Python","C++","SQL"]],
+  ["¿Qué estructura repite un bloque de código varias veces?", ["Un bucle (for o while)","Una variable","Un comentario","Una condición if"]],
+  ["¿Qué hace una condición if?", ["Ejecuta código solo si se cumple algo","Repite código para siempre","Borra variables","Muestra imágenes"]],
+  ["En la mayoría de lenguajes, ¿qué símbolo compara si dos valores son iguales?", ["==","=","=>","!="]],
+  ["¿Qué etiqueta HTML crea el título más grande?", ["<h1>","<h6>","<title>","<head>"]],
+  ["¿Qué lenguaje se usa para consultar bases de datos?", ["SQL","HTML","CSS","Markdown"]],
+  ["¿Qué etiqueta HTML crea un párrafo?", ["<p>","<par>","<text>","<br>"]],
+  ["¿Qué etiqueta HTML crea una lista con viñetas?", ["<ul>","<ol>","<li>","<list>"]],
+  ["¿Qué propiedad CSS cambia el color de fondo?", ["background-color","color","bgcolor","fill"]],
+  ["¿Qué propiedad CSS cambia el tamaño de la letra?", ["font-size","text-size","font-weight","size"]],
+  ["En programación, ¿qué es una variable?", ["Un espacio con nombre para guardar un dato","Un error del programa","Un tipo de computadora","Una página web"]],
+  ["¿Qué valores puede tener un dato booleano?", ["true o false","Solo números","Solo letras","Cualquier imagen"]],
+  ["¿Qué tipo de dato es \"Hola\"?", ["Texto (string)","Número entero","Booleano","Decimal"]],
+  ["¿Cómo se escribe un comentario de una línea en JavaScript?", ["//","#","<!-- -->","**"]],
+  ["¿Qué significa CSS?", ["Cascading Style Sheets","Computer Style System","Creative Site Styles","Colorful Style Sheets"]]
+ ]}
+];
+let MINE = ls.get("quiz_mis", null);
+if(!Array.isArray(MINE)) MINE = [];
+const saveMine = () => ls.set("quiz_mis", MINE);
+// convierte un quiz listo en preguntas del editor, con las opciones revueltas
+function packToQs(pack){
+  return pack.qs.map(([q, opts, t]) => {
+    const idx = opts.map((_,i) => i);
+    for(let i = idx.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+    const a = idx.map(i => opts[i]); while(a.length < 4) a.push("");
+    return { q, a, c: idx.indexOf(0), t: t || 20 };
+  });
+}
+
+/* ============================================================
+   CARRERA: cada jugador avanza por su carril según sus puntos
+   list: [{name,total,pts}] ordenada; scale: puntos que equivalen a la meta
+   ============================================================ */
+const MEDALS = ["🥇","🥈","🥉"];
+// rueda con llanta, aro y rayos (los rayos giran mientras el carro avanza)
+const WHEEL = (x, r) => `<g><circle cx="${x}" cy="31" r="${r}" fill="#16191f"/><circle cx="${x}" cy="31" r="${r*.62}" fill="#cfd5df"/>
+  <g class="wh"><path d="M${x} ${31-r*.55} V${31+r*.55} M${x-r*.55} 31 H${x+r*.55} M${x-r*.39} ${31-r*.39} L${x+r*.39} ${31+r*.39} M${x-r*.39} ${31+r*.39} L${x+r*.39} ${31-r*.39}" stroke="#8b93a1" stroke-width="1.1"/></g>
+  <circle cx="${x}" cy="31" r="${r*.2}" fill="#5b6270"/><circle cx="${x}" cy="31" r="${r*.62}" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width=".7"/></g>`;
+const SHADOW = '<ellipse cx="40" cy="37.5" rx="35" ry="2.2" fill="#000" opacity=".35"/>';
+const GLASS = (d) => `<path d="${d}" fill="#9fd3ee"/><path d="${d}" fill="#fff" opacity=".18"/>`;
+const SHINE = (d) => `<path d="${d}" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.4" stroke-linecap="round"/>`;
+const LOWER = (d) => `<path d="${d}" fill="#000" opacity=".22"/>`;
+const HEAD = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="2.2" ry="1.4" fill="#fff6c2"/><ellipse cx="${x+1}" cy="${y}" rx="4" ry="2.2" fill="#fff3a0" opacity=".25"/>`;
+const TAIL = (x, y) => `<rect x="${x}" y="${y}" width="2.2" height="3.4" rx="1" fill="#ff4d4d"/>`;
+const CAR_TYPES = [
+  // 1. de carreras: bajito, con alerón y franja
+  SHADOW + `<rect x="7.5" y="15" width="2.2" height="7" fill="#22262e"/><rect x="2.5" y="12.5" width="13" height="3.4" rx="1.4" fill="currentColor"/>
+   <path d="M6 28 L8 23 Q10 20 16 19.6 L30 18.6 Q36 11.5 46 11.2 L52 11.2 Q58 12 63 18 L74 21 Q78 22 78 26 L78 29 Q78 31 76 31 L8 31 Q6 31 6 28 Z" fill="currentColor"/>
+   ${LOWER("M7 27 L78 27 L78 29 Q78 31 76 31 L8 31 Q6 31 6 28 Z")}
+   <path d="M38 14 Q44 12.8 51 13 Q55.5 13.6 59 17.8 L36 18.4 Z" fill="#1b2433"/><path d="M41 14.2 Q46 13.4 50 13.6" stroke="#fff" stroke-opacity=".6" stroke-width="1" fill="none"/>
+   <path d="M14 23 L75 24" stroke="#fff" stroke-width="2.4" opacity=".85"/><circle cx="27" cy="25" r="3.6" fill="#fff"/><circle cx="27" cy="25" r="2.2" fill="currentColor"/>
+   ${SHINE("M33 17 Q38 12.8 46 12.4")}${HEAD(75.5, 24)}${TAIL(6, 22.5)}` + WHEEL(20, 6.5) + WHEEL(64, 6.5),
+  // 2. sedán familiar
+  SHADOW + `<path d="M5 27 Q5 21 12 20.5 L22 20 L30 12.4 Q32 10.6 35 10.6 L50 10.6 Q53 10.6 55 12.6 L62.5 20 L71 21 Q77 22 77 26 L77 29 Q77 31 75 31 L7 31 Q5 31 5 29 Z" fill="currentColor"/>
+   ${LOWER("M5 26.5 L77 26.5 L77 29 Q77 31 75 31 L7 31 Q5 31 5 29 Z")}
+   ${GLASS("M31.6 13.2 Q33 12.4 35 12.4 L42 12.4 L42 20 L24.6 20 Z")}${GLASS("M44 12.4 L50 12.4 Q52 12.4 53.6 13.9 L59.6 20 L44 20 Z")}
+   <path d="M33 14 L37 14 L31 19" stroke="#fff" stroke-opacity=".55" stroke-width="1" fill="none"/>
+   <path d="M43 20 V30" stroke="#000" stroke-opacity=".25" stroke-width=".8"/><rect x="36" y="22" width="3.5" height="1.2" rx=".6" fill="#000" opacity=".3"/><rect x="47" y="22" width="3.5" height="1.2" rx=".6" fill="#000" opacity=".3"/>
+   ${SHINE("M12 21.6 L70 22.2")}${HEAD(75, 24)}${TAIL(5, 22.5)}` + WHEEL(20, 6) + WHEEL(62, 6),
+  // 3. todoterreno 4x4 con barra de luces
+  SHADOW + `<rect x="45" y="5.2" width="12" height="2.2" rx="1" fill="#2a2f3a"/><circle cx="48" cy="6.3" r=".9" fill="#ffe27a"/><circle cx="51" cy="6.3" r=".9" fill="#ffe27a"/><circle cx="54" cy="6.3" r=".9" fill="#ffe27a"/>
+   <path d="M4 24 L4 19 Q4 18 5 18 L40 18 L42 9.4 Q42.5 8 44 8 L58 8 Q60 8 61 9.5 L67 18 L74 19.5 Q77 20 77 23 L77 28 Q77 30 75 30 L6 30 Q4 30 4 28 Z" fill="currentColor"/>
+   ${LOWER("M4 25.5 L77 25.5 L77 28 Q77 30 75 30 L6 30 Q4 30 4 28 Z")}
+   <rect x="4" y="16.2" width="36" height="2.4" fill="#000" opacity=".3"/>
+   ${GLASS("M45 10.5 L57.5 10.5 L63 18 L44 18 Z")}<path d="M47 12 L50 12 L46 17" stroke="#fff" stroke-opacity=".55" stroke-width="1" fill="none"/>
+   <rect x="73.5" y="24.5" width="5.5" height="4" rx="1" fill="#2a2f3a"/><rect x="2" y="24.5" width="4" height="4" rx="1" fill="#2a2f3a"/>
+   ${SHINE("M44 9.4 L58 9.4")}${HEAD(74.5, 22)}${TAIL(4.2, 20)}` + WHEEL(19, 7.4) + WHEEL(61, 7.4),
+  // 4. buseta escolar
+  SHADOW + `<path d="M4 10 Q4 5 9 5 L60 5 Q65 5 68 10 L75 19 Q77 21 77 24 L77 29 Q77 31 75 31 L6 31 Q4 31 4 29 Z" fill="currentColor"/>
+   ${LOWER("M4 26 L77 26 L77 29 Q77 31 75 31 L6 31 Q4 31 4 29 Z")}
+   ${GLASS("M9 8 h10 a2 2 0 0 1 2 2 v6 h-14 v-6 a2 2 0 0 1 2 -2 Z")}${GLASS("M23 8 h10 a2 2 0 0 1 2 2 v6 h-14 v-6 a2 2 0 0 1 2 -2 Z")}${GLASS("M37 8 h6 a2 2 0 0 1 2 2 v6 h-10 v-6 a2 2 0 0 1 2 -2 Z")}
+   ${GLASS("M48 8 L61 8 Q63 8 64.5 10 L70 17 L48 17 Z")}<path d="M51 9.5 L54 9.5 L50 15.5" stroke="#fff" stroke-opacity=".55" stroke-width="1" fill="none"/>
+   <rect x="4" y="20" width="73" height="2.6" fill="#fff" opacity=".75"/><path d="M46.5 8 V30" stroke="#000" stroke-opacity=".22" stroke-width=".8"/>
+   ${SHINE("M9 6.4 L60 6.4")}${HEAD(75, 24.5)}${TAIL(4.2, 22.5)}` + WHEEL(18, 6) + WHEEL(63, 6),
+  // 5. escarabajo
+  SHADOW + `<path d="M6 29 Q6 22 14 21 Q20 9.5 38 8.6 Q54 9 62 20 Q74 21 76 26 L76 29 Q76 31 74 31 L8 31 Q6 31 6 29 Z" fill="currentColor"/>
+   ${LOWER("M6 27 L76 27 L76 29 Q76 31 74 31 L8 31 Q6 31 6 29 Z")}
+   ${GLASS("M22.5 20 Q26.5 12.4 36.5 11.6 L38.2 11.6 L38.2 20 Z")}${GLASS("M40 11.6 Q51.5 12.2 57.5 20 L40 20 Z")}
+   <path d="M27 17 Q29 14 33 13.2" stroke="#fff" stroke-opacity=".55" stroke-width="1" fill="none"/>
+   <path d="M39 20 V29" stroke="#000" stroke-opacity=".25" stroke-width=".8"/><rect x="42" y="22" width="3.5" height="1.2" rx=".6" fill="#000" opacity=".3"/>
+   ${SHINE("M24 13 Q32 9.8 44 10")}${HEAD(73.5, 24.5)}${TAIL(6.2, 23)}` + WHEEL(20, 6.4) + WHEEL(60, 6.4)
+];
+// cada jugador: color = su número de entrada y el modelo va cambiando, así no se repiten (hasta 40 distintos)
+function carSVG(i){
+  if(i && typeof i === "object") return carSVG.pick((+i.t || 0) % CAR_TYPES.length, (+i.c || 0) % 8);
+  const color = i % 8, type = (i + Math.floor(i / 8)) % CAR_TYPES.length;
+  return carSVG.pick(type, color);
+}
+carSVG.pick = (type, color) => {
+  return `<svg class="car c${color}" viewBox="0 0 80 40" aria-hidden="true">${CAR_TYPES[type]}</svg>`;
+};
+// el carro por defecto de cada jugador según su orden de entrada
+const defaultCar = i => ({ t:(i + Math.floor(i / 8)) % CAR_TYPES.length, c:i % 8 });
+const cleanCar = c => (c && typeof c === "object" && Number.isInteger(+c.t) && Number.isInteger(+c.c)) ? { t:Math.abs(+c.t) % 5, c:Math.abs(+c.c) % 8 } : null;
+
+function raceScale(list, qn, nq, final){
+  const lead = Math.max(1, ...list.map(p => p.total));
+  if(final) return lead;                                   // al final el primero cruza la meta
+  const frac = Math.min(1, qn / Math.max(1, nq));
+  return Math.max(lead, 1000 * qn) / (0.15 + 0.85 * frac);  // avanzan un poco en cada pregunta
+}
+function raceHTML(list, opts){
+  const o = opts || {}, scale = o.scale || 1;
+  const ini = n => (String(n).trim()[0] || "?").toUpperCase();
+  return `<div class="race ${o.final ? "final" : ""}">
+    <div class="raceHead"><span>Salida</span><span>Meta 🏁</span></div>
+    ${list.map((p,k) => {
+      const to = Math.min(1, p.total / scale), from = o.final ? 0 : Math.min(1, Math.max(0, p.total - (p.pts||0)) / scale);
+      if(o.final) return `<div class="lane ${o.me === p.name ? "me" : ""}" data-rank="${k}">
+        <span class="pos"></span>
+        <div class="track"><div class="runner ${k < 3 ? "flip" : ""}" style="--x:0">
+          ${carSVG(p.car || (p.color ?? k))}<span class="rn">${esc(p.name)}${o.me === p.name ? " (usted)" : ""}</span></div></div>
+        <span class="lpts">${p.total}</span>
+      </div>`;
+      return `<div class="lane ${o.me === p.name ? "me" : ""}">
+        <span class="pos">${(k+1) + "°"}</span>
+        <div class="track"><div class="runner ${to > .6 ? "flip" : ""}" style="--x:${from.toFixed(4)}" data-to="${to.toFixed(4)}">
+          ${carSVG(p.car || (p.color ?? k))}<span class="rn">${esc(p.name)}${o.me === p.name ? " (usted)" : ""}</span></div></div>
+        <span class="lpts">${p.total}${p.pts ? `<small>+${p.pts}</small>` : ""}</span>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+// la gran final: el 3° va adelante, lo pasa el 2° y al final el 1° rebasa a todos; los demás chocan
+function raceFinale(race, done){
+  const lanes = [...race.querySelectorAll(".lane")];
+  const D = 7000;
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const L = x => `calc((100% - var(--carw)) * ${x})`;
+  const at = (ms, fn) => setTimeout(fn, reduce ? 0 : ms);
+  // posición de cada uno de los 3 primeros en cada momento de la carrera
+  const PLAN = [
+    [[0,0],[.2,.14],[.5,.42],[.72,.9],[.84,1]],   // 1°: sale lento y rebasa a todos al final
+    [[0,0],[.2,.24],[.5,.62],[.72,.8],[.92,1]],   // 2°: pasa al 3° a media carrera
+    [[0,0],[.2,.34],[.5,.56],[.72,.74],[1,1]]     // 3°: arranca adelante y llega de último
+  ];
+  const arrive = (lane, k) => {
+    lane.classList.add("arrived"); lane.querySelector(".pos").textContent = MEDALS[k];
+    beep([1047,880,784][k], 180, "triangle");
+  };
+  const crash = (lane, x) => {
+    const r = lane.querySelector(".runner");
+    r.style.setProperty("--x", x); r.classList.add("crashed");
+    r.insertAdjacentHTML("beforeend", '<span class="boom">💥</span><span class="smoke">💨</span>');
+    lane.classList.add("out"); lane.querySelector(".pos").textContent = (+lane.dataset.rank + 1) + "°";
+    beep(110, 260, "sawtooth"); setTimeout(() => beep(70, 300, "square"), 60);
+  };
+  lanes.forEach(lane => {
+    const k = +lane.dataset.rank, r = lane.querySelector(".runner");
+    r.style.transition = "none";
+    if(k < 3){
+      const plan = PLAN[k];
+      if(reduce){ r.style.setProperty("--x", 1); arrive(lane, k); return; }
+      r.classList.add("moving");
+      const anim = r.animate(plan.map(([t,x]) => ({ offset:t, left:L(x) })), { duration:D, easing:"linear", fill:"forwards" });
+      anim.onfinish = () => { r.style.setProperty("--x", 1); r.classList.remove("moving"); };
+      at(plan[plan.length-1][0] * D, () => arrive(lane, k));
+    } else {
+      const tc = .22 + Math.random() * .38, xc = (.18 + Math.random() * .42).toFixed(3);
+      if(reduce){ crash(lane, xc); return; }
+      r.classList.add("moving");
+      r.animate([{ offset:0, left:L(0) }, { offset:1, left:L(xc) }], { duration:tc * D, easing:"ease-in", fill:"forwards" });
+      at(tc * D, () => { r.classList.remove("moving"); crash(lane, xc); });
+    }
+  });
+  at(D + 400, () => { race.classList.add("done"); if(done) done(); });
+}
+// podio: 2° a la izquierda, 1° al centro, 3° a la derecha
+function podiumHTML(list, me){
+  const order = [1,0,2].filter(k => list[k]);
+  return `<div class="podium" id="finPodium" hidden>${order.map(k => `<div class="pstep p${k+1} ${me && list[k].name === me ? "me" : ""}">
+      <span class="medal">${MEDALS[k]}</span>
+      ${carSVG(list[k].car || (list[k].color ?? k))}
+      <span class="name">${esc(list[k].name)}</span>
+      <small>${list[k].total} pts</small>
+      <div class="block">${k+1}</div>
+    </div>`).join("")}</div>`;
+}
+function showPodium(){ const pd = $("finPodium"); if(pd){ pd.hidden = false; pd.classList.add("show"); } }
+// confeti para el final
+function confetti(){
+  if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = document.createElement("canvas"); c.className = "confetti"; document.body.appendChild(c);
+  const ctx = c.getContext("2d"), W = c.width = innerWidth, H = c.height = innerHeight;
+  const cols = ["#e8553f","#2f8fd6","#e0a81e","#2e9e6b","#f3efe4","#b07ad9"];
+  const ps = Array.from({ length:160 }, () => ({ x:W/2 + (Math.random()-.5)*W*.3, y:H*.35, vx:(Math.random()-.5)*14, vy:-Math.random()*14-4, s:5+Math.random()*6, r:Math.random()*6, vr:(Math.random()-.5)*.3, c:cols[Math.floor(Math.random()*cols.length)] }));
+  const t0 = performance.now();
+  const step = now => {
+    const t = now - t0; ctx.clearRect(0,0,W,H);
+    ps.forEach(p => { p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.globalAlpha = Math.max(0, 1 - t/3500); ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); ctx.restore(); });
+    if(t < 3500) requestAnimationFrame(step); else c.remove();
+  };
+  requestAnimationFrame(step);
+}
+// mueve las fichas hasta su lugar (después de dibujar, para que se vea el avance)
+function raceGo(done){
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const fin = document.querySelector(".race.final");
+    if(fin){ raceFinale(fin, done); const me0 = document.querySelector(".lane.me"); if(me0 && me0.scrollIntoView) me0.scrollIntoView({ block:"nearest" }); return; }
+    raceBluff([...document.querySelectorAll(".race:not(.final) .runner[data-to]")]);
+    const me = document.querySelector(".lane.me"); if(me && me.scrollIntoView) me.scrollIntoView({ block:"nearest" });
+  }));
+}
+// marcador con engaño: un carro de atrás arranca y pasa a todos… pero al final cada uno queda en su lugar real
+function raceBluff(runners){
+  if(!runners.length) return;
+  const L = x => `calc((100% - var(--carw)) * ${x})`;
+  const info = runners.map(r => ({ r, from:+r.style.getPropertyValue("--x") || 0, to:+r.dataset.to }));
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const moved = info.some(i => Math.abs(i.to - i.from) > .002);
+  if(reduce || !moved || !runners[0].animate){ info.forEach(i => i.r.style.setProperty("--x", i.to)); return; }
+  const lead = Math.max(...info.map(i => i.to));
+  // el que engaña: alguien del 2° al 4° lugar (los carriles ya vienen ordenados por puesto)
+  const b = info.length > 1 ? 1 + Math.floor(Math.random() * Math.min(3, info.length - 1)) : -1;
+  if(b > 0) info[b].r.closest(".lane").classList.add("bluff");
+  info.forEach((it, k) => {
+    const d = it.to - it.from;
+    const mid = k === b ? Math.min(1, Math.max(it.to, lead) + .07) : (k === 0 && b > 0 ? it.from + d * .3 : it.from + d * .6);
+    it.r.style.transition = "none"; it.r.classList.add("moving");
+    const a = it.r.animate([{ left:L(it.from) }, { left:L(mid), offset:.5 }, { left:L(it.to) }], { duration:3000, easing:"ease-in-out", fill:"forwards" });
+    a.onfinish = () => { it.r.style.setProperty("--x", it.to); it.r.classList.remove("moving"); };
+  });
+}
+// color fijo por jugador (según el orden en que entró), para reconocer la ficha
+function colorIndex(name, names){ const i = names.indexOf(name); return i < 0 ? 0 : i; }
+
+/* ============================================================
+   MODO DOCENTE (central)
+   ============================================================ */
+/* ============================================================
+   PERSONAJES Y TARJETAS DE SOBREVIVIENTES
+   ============================================================ */
+const AVATARS = ["🦁","🐯","🐸","🐵","🦊","🐼","🐨","🐙","🦄","🐲","🐧","🦖","👽","🤖","👻","🐱"];
+const avOf = p => AVATARS[((p && p.av) ?? 0) % AVATARS.length];
+// orden: primero los que siguen en pie, después los que cayeron más tarde
+const byStanding = (a, b) => ((a.out?1:0) - (b.out?1:0)) || ((b.out||0) - (a.out||0)) || ((b.total||0) - (a.total||0)) || ((a.tms||0) - (b.tms||0)) || a.name.localeCompare(b.name);
+// cada personaje: la cara que escogió y un cuerpo con brazos y piernas que se mueven
+const FIG_COLORS = ["#e8553f","#2f8fd6","#e0a81e","#2e9e6b","#b07ad9","#f08bb4","#5fc9d6","#f28c28"];
+function figureHTML(p, me, isWin){
+  const col = FIG_COLORS[((p.av ?? 0) + (p.name || "").length) % FIG_COLORS.length];
+  return `<div class="fig ${me && p.name === me ? "me" : ""}" data-out="${p.out || 0}" data-win="${isWin ? 1 : 0}" data-name="${esc(p.name)}" data-av="${p.av ?? 0}">
+    <span class="crw">👑</span>
+    <div class="figIn"><span class="hd">${avOf(p)}</span>
+      <svg viewBox="0 0 40 56" aria-hidden="true">
+        <rect class="leg legL" x="12.5" y="35" width="6" height="19" rx="3" fill="#2a3352"/>
+        <rect class="leg legR" x="21.5" y="35" width="6" height="19" rx="3" fill="#2a3352"/>
+        <ellipse cx="15" cy="54" rx="4.6" ry="2.2" fill="#15181f"/><ellipse cx="25" cy="54" rx="4.6" ry="2.2" fill="#15181f"/>
+        <rect class="arm armL" x="2.5" y="14" width="5.6" height="19" rx="2.8" fill="${col}"/>
+        <rect class="arm armR" x="31.9" y="14" width="5.6" height="19" rx="2.8" fill="${col}"/>
+        <rect x="8" y="12" width="24" height="26" rx="9" fill="${col}"/>
+        <path d="M13 15 Q20 19 27 15" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" fill="none"/>
+        <rect x="8" y="29" width="24" height="4" fill="#000" opacity=".18"/>
+      </svg></div>
+    <span class="fn">${esc(p.name)}</span>
+  </div>`;
+}
+// el escenario con todos (en desorden, para que el ganador no salga siempre primero)
+// tarjeta del cementerio para un jugador que cayó
+function graveHTML(name, av, out, isMe){
+  return `<div class="grave ${isMe ? "me" : ""}"><span class="tomb">🪦</span><span class="gav">${AVATARS[(+av || 0) % AVATARS.length]}</span><b>${esc(name)}</b><small>${+out ? "cayó en la " + out : "cayó"}</small></div>`;
+}
+function stageHTML(list, me){
+  const win = list[0];
+  const mix = list.slice();
+  for(let i = mix.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [mix[i], mix[j]] = [mix[j], mix[i]]; }
+  return `<div class="stage" id="stage">${mix.map(p => figureHTML(p, me, p === win)).join("")}</div>
+    <div class="cemWrap" id="cemWrap" hidden><h3>🪦 Fueron cayendo…</h3><div class="cemetery" id="cem"></div></div>`;
+}
+// la gran caída: caen en el orden en que fueron eliminados (los últimos tres despacio),
+// cada uno pasa ordenado al cementerio, y al final el ganador sube al podio a bailar
+function runFinale(done){
+  const stage = $("stage"), cem = $("cem"), cemWrap = $("cemWrap");
+  const figs = stage ? [...stage.querySelectorAll(".fig")] : [];
+  if(!figs.length){ if(done) done(); return; }
+  const win = figs.find(f => f.dataset.win === "1") || figs[0];
+  const losers = figs.filter(f => f !== win).sort((a,b) => (+a.dataset.out || 999) - (+b.dataset.out || 999) || Math.random() - .5);
+  const toGrave = f => {
+    if(cemWrap) cemWrap.hidden = false;
+    if(cem) cem.insertAdjacentHTML("beforeend", graveHTML(f.dataset.name, f.dataset.av, f.dataset.out, f.classList.contains("me")));
+    f.remove();
+  };
+  const finish = () => {
+    if(stage){ stage.classList.add("gone"); setTimeout(() => { stage.hidden = true; }, 600); }
+    if(done) done();
+  };
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){ losers.forEach(toGrave); finish(); return; }
+  const n = losers.length, fast = Math.max(260, Math.min(700, 7000 / Math.max(1, n)));
+  let t = 1400;
+  losers.forEach((f, i) => {
+    setTimeout(() => {
+      f.classList.add("dead");
+      f.insertAdjacentHTML("beforeend", '<span class="fboom">💥</span>');
+      beep(120 + Math.random()*80, 200, "sawtooth");
+      setTimeout(() => toGrave(f), 950);
+    }, t);
+    t += (n - i) <= 3 ? 1300 : fast;
+  });
+  // queda uno solo: se corona en el escenario y después sube al podio
+  setTimeout(() => { stage.classList.add("won"); win.classList.add("winner", "king"); beep(660,150,"triangle"); setTimeout(() => beep(990,220,"triangle"), 160); }, t + 800);
+  setTimeout(finish, t + 2600);
+}
+// pone a bailar al ganador arriba del podio
+function danceOnPodium(){
+  showPodium();
+  const f = document.querySelector("#finPodium .p1 .fig");
+  if(f) f.classList.add("king", "dance");
+  const pd = $("finPodium"), cw = $("cemWrap");
+  if(pd && cw) pd.after(cw); // el cementerio va debajo del podio
+  if(pd && pd.scrollIntoView) pd.scrollIntoView({ block:"center", behavior:"smooth" });
+}
+// podio: 2° a la izquierda, 1° (el último en pie) al centro, 3° a la derecha
+function podiumAvHTML(list, me){
+  const order = [1,0,2].filter(k => list[k]);
+  return `<div class="podium av" id="finPodium" hidden>${order.map(k => `<div class="pstep p${k+1} ${me && list[k].name === me ? "me" : ""}">
+      <span class="medal">${MEDALS[k]}</span>
+      ${figureHTML(list[k], me, false)}
+      <span class="name">${esc(list[k].name)}</span>
+      <small>${list[k].out ? "💀 cayó en la " + list[k].out : "¡En pie!"} · ${list[k].total} aciertos</small>
+      <div class="block">${k+1}</div>
+    </div>`).join("")}</div>`;
+}
+function tilesHTML(list, qn, me){
+  return `<div class="tiles">${list.map(p => {
+    const st = !p.out ? "alive" : (p.out === qn ? "justout" : "out");
+    return `<div class="tile ${st} ${me && p.name === me ? "me" : ""}"><span class="av">${avOf(p)}</span><b>${esc(p.name)}</b>
+      <small>${!p.out ? "💪 En pie" : p.out === qn ? "💀 ¡Cayó!" : "💀 Pregunta " + p.out}</small></div>`;
+  }).join("")}</div>`;
+}
+
+const H = { s:null, roomRef:null, token:null, fbConns:{}, conns:{}, tick:null, lastOnlineKey:"", view:"edit" };
+let QS = ls.get("quiz_preguntas", null);
+if(!Array.isArray(QS)) QS = [];
+const saveQS = () => ls.set("quiz_preguntas", QS);
+
+function hFresh(code){ return { code, players:{}, phase:"lobby", qs:[], qi:-1, ans:{}, startedAt:0, dur:20, podium:null }; }
+function newCode(){ return String(Math.floor(1000 + Math.random()*9000)); }
+function hSave(){ const c = JSON.parse(JSON.stringify(H.s)); Object.values(c.players).forEach(p => delete p.seen); ls.set("ultimo_host", c); }
+const isOn = p => !!p.seen && (Date.now() - p.seen) < ONLINE_MS;
+const onlineIds = () => Object.keys(H.s.players).filter(id => isOn(H.s.players[id]));
+const ranked = () => Object.entries(H.s.players).map(([id,p]) => ({id, ...p})).sort(byStanding);
+const aliveCount = () => Object.values(H.s.players).filter(p => !p.out).length;
+
+function teacherInit(){
+  const saved = ls.get("ultimo_host", null);
+  H.s = saved && saved.code ? saved : hFresh(newCode());
+  Object.keys(H.s.players).forEach(id => { const p = H.s.players[id]; if(!p.lastAt || Date.now() - p.lastAt > 30*60*1000) delete H.s.players[id]; });
+  if(H.s.phase !== "lobby") H.view = "game"; // si se recarga a media pregunta, el reloj sigue donde iba
+  hSave(); hStartNet(); hRender();
+  document.addEventListener("keydown", e => { if(e.key === "Escape"){ const o=$("ovPin"); if(o) o.remove(); } });
+  setInterval(hBroadcast, 8000);
+  setInterval(() => {
+    const key = onlineIds().sort().join(",");
+    if(key !== H.lastOnlineKey){ H.lastOnlineKey = key; hRenderPeople(); hBroadcast(); hCheckAllAnswered(); }
+  }, 3000);
+}
+function hLink(){ return location.host + location.pathname.replace(/index\.html$/,""); }
+function hStartNet(){
+  if(!NET.init()){ toast("No se pudo cargar Firebase. Revise el internet."); return; }
+  if(!H.token){ H.token = ls.get("ultimo_token", null) || (Math.random().toString(36).slice(2) + Date.now().toString(36)); ls.set("ultimo_token", H.token); }
+  if(H.roomRef){ try{ H.roomRef.child("toHost").off(); }catch(e){} }
+  const code = H.s.code, room = NET.room(code);
+  room.child("host").once("value").then(snap => {
+    const h = snap.val();
+    if(h && h.token !== H.token){ H.s.code = newCode(); hSave(); hStartNet(); hRender(); return; } // PIN ocupado (otro juego u otra profe)
+    H.roomRef = room; H.fbConns = {}; H.conns = {};
+    room.child("host").set({ token:H.token, game:GAME, t:firebase.database.ServerValue.TIMESTAMP });
+    room.child("host").onDisconnect().remove();
+    room.child("toHost").on("child_added", s2 => {
+      const m = s2.val(); s2.ref.remove();
+      if(!m || !m.cid || !m.d) return;
+      const cid = String(m.cid).replace(/[^a-z0-9]/gi,"").slice(0,40); if(!cid) return;
+      let c = H.fbConns[cid]; if(!c) c = H.fbConns[cid] = new FbConn(code, cid);
+      hOnData(c, m.d);
+    });
+    hBroadcast(); hSetNet(true);
+  }).catch(err => { console.error(err); hSetNet(false, "Firebase rechazó la conexión. Revise las reglas de la base de datos."); });
+  NET.onConnected(ok => hSetNet(ok));
+}
+function hSetNet(ok, msg){ H.netOk = ok; H.netMsg = msg || (ok ? "" : "Sin conexión a internet; reintentando…"); document.querySelectorAll(".netDot").forEach(d => d.classList.toggle("off", !ok)); document.querySelectorAll(".netMsg").forEach(d => d.textContent = H.netMsg); }
+function connFor(cid){ if(!H.fbConns[cid]) H.fbConns[cid] = new FbConn(H.s.code, cid); return H.fbConns[cid]; }
+
+function hStateMsg(){
+  const s = H.s, q = s.qs[s.qi];
+  const m = { t:"state", game:GAME, phase:s.phase, qn:s.qi+1, nq:s.qs.length,
+    players: Object.values(s.players).map(p => ({ name:p.name, total:p.total||0, online:isOn(p), out:p.out||0, av:p.av ?? 0 })), alive:aliveCount() };
+  if(s.phase === "reveal" || s.phase === "board"){ m.elim = s.elim || []; m.saved = !!s.saved; m.slow = s.slow || null; }
+  if(s.fast && (s.phase === "reveal" || s.phase === "board") && s.fast.qn === s.qi+1) m.fast = s.fast;
+  if(q && s.phase !== "lobby" && s.phase !== "end"){
+    m.q = q.q; m.texts = q.a; m.dur = s.dur; m.double = !!q.double; m.sd = !!q.sd; m.sdRound = s.sdRound || 0;
+    m.remaining = Math.max(0, s.dur - (Date.now() - s.startedAt)/1000);
+    if(s.phase !== "question") m.correct = q.c;
+  }
+  return m;
+}
+function hBroadcast(){ if(!H.roomRef) return; const m = hStateMsg(); m.hb = Date.now(); try{ H.roomRef.child("state").set(clean(m)); }catch(e){ console.error(e); } }
+
+function hOnData(c, d){
+  if(!d || typeof d !== "object") return;
+  const s = H.s;
+  if(d.t === "join"){
+    const name = String(d.name||"").replace(/\s+/g," ").trim().slice(0,52);
+    const cid = String(d.cid||"").replace(/[^a-z0-9]/gi,"").slice(0,40);
+    if(!name || !cid){ c.send({t:"rejected", msg:"Escriba su nombre para entrar."}); return; }
+    let p = s.players[cid];
+    if(!p){
+      const same = Object.entries(s.players).find(([,x]) => x.name.toLowerCase() === name.toLowerCase() && !isOn(x));
+      if(same){
+        const [oldId, rec] = same; delete s.players[oldId]; s.players[cid] = rec; p = rec;
+        if(s.ans[oldId]){ s.ans[cid] = s.ans[oldId]; delete s.ans[oldId]; }
+      } else {
+        const taken = new Set(Object.values(s.players).map(x => x.name.toLowerCase()));
+        let nm = name, k = 2; while(taken.has(nm.toLowerCase())) nm = name + " " + (k++);
+        p = s.players[cid] = { name:nm, total:0, streak:0 };
+        p.av = (d.av != null && Number.isInteger(+d.av) && +d.av >= 0 && +d.av < AVATARS.length) ? +d.av : (Object.keys(s.players).length - 1) % AVATARS.length;
+        if(s.phase !== "lobby" && s.qi >= 0) p.out = s.qi + 1; // si entra con el juego empezado, mira como espectador
+        beep(700,90);
+      }
+    }
+    c.open = true; c._cid = cid; H.conns[cid] = c; p.seen = Date.now(); p.lastAt = Date.now();
+    hSave();
+    c.send({ t:"welcome", name:p.name });
+    if(s.phase === "question" && s.ans[cid]) c.send({ t:"got", qn:s.qi+1, choice:s.ans[cid].c });
+    if((s.phase === "reveal" || s.phase === "board") && p.last && p.last.qn === s.qi+1) c.send(hResultMsg(cid));
+    if(s.phase === "end" && s.podium) c.send({ t:"podium", list:s.podium, me:p.name });
+    hRenderPeople(); hBroadcast();
+    return;
+  }
+  const cid = c._cid || String(d.cid||""); const p = s.players[cid];
+  if(!p){ c.send({ t:"kicked" }); return; }
+  c._cid = cid;
+  const wasOn = isOn(p); p.seen = Date.now(); p.lastAt = Date.now();
+  if(!wasOn){ hRenderPeople(); hBroadcast(); }
+  if(d.t === "ping") return;
+  if(d.t === "av"){ const v = +d.av; if(Number.isInteger(v) && v >= 0 && v < AVATARS.length){ p.av = v; hSave(); hRenderPeople(); hBroadcast(); } return; }
+  if(d.t === "car"){ const c = cleanCar(d.car); if(c){ p.car = c; hSave(); hRenderPeople(); hBroadcast(); } return; }
+  if(d.t === "answer"){
+    const q = s.qs[s.qi];
+    if(s.phase !== "question" || d.qn !== s.qi+1 || !q) return;
+    const ch = +d.choice;
+    if(!(ch >= 0 && ch < 4) || !(q.a[ch]||"").trim()) return;
+    if(Date.now() < s.startedAt || p.out) return;
+    if(!s.ans[cid]){ s.ans[cid] = { c:ch, ms:Math.max(0, Date.now() - s.startedAt) }; hSave(); hRenderCount(); }
+    c.send({ t:"got", qn:s.qi+1, choice:s.ans[cid].c });
+    hCheckAllAnswered();
+  }
+}
+function hCheckAllAnswered(){
+  const s = H.s; if(s.phase !== "question") return;
+  const on = onlineIds().filter(id => !H.s.players[id].out); if(!on.length) return;
+  if(on.every(id => s.ans[id])){ clearTimeout(H.allT); H.allT = setTimeout(() => { if(H.s.phase === "question") hReveal(); }, 700); }
+}
+
+/* --- flujo del juego --- */
+function hOpenLobby(){
+  const ready = QS.filter(qReady);
+  if(!ready.length){ toast("Primero marque la respuesta correcta de al menos una pregunta."); return; }
+  const s = H.s;
+  s.qs = JSON.parse(JSON.stringify(ready)); s.qi = -1; s.phase = "lobby"; s.ans = {}; s.podium = null;
+  // preguntas sorpresa: 3 al azar (nunca la primera) valen el doble y tienen la mitad del tiempo
+  const nDbl = 0; // en este juego no hay preguntas dobles
+  const pool = s.qs.map((_,i) => i).slice(1);
+  for(let i = pool.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  s.qs.forEach(q => delete q.double);
+  pool.slice(0, nDbl).forEach(i => s.qs[i].double = true);
+  Object.values(s.players).forEach(p => { p.total = 0; p.streak = 0; p.last = null; p.out = 0; p.tms = 0; });
+  s.elim = []; s.saved = false;
+  s.nBase = s.qs.length; s.sdRound = 0; s.sdUsed = []; s.slow = null;
+  H.view = "game"; hSave(); hBroadcast(); hRender();
+}
+function hNext(){
+  const s = H.s;
+  if(s.qi >= 0 && aliveCount() <= 1){ hEnd(); return; }
+  if(s.qi >= s.qs.length - 1) hAddSuddenDeath(); // se acabaron las preguntas y quedan varios: ¡muerte súbita!
+  s.qi++; s.phase = "question"; s.ans = {}; s.elim = []; s.saved = false; s.slow = null;
+  const dq = s.qs[s.qi], base = dq.t || 20;
+  s.dur = dq.sd ? Math.max(6, Math.round(base / 2)) : Math.max(8, base - Math.floor(s.qi / 2)); // el tiempo baja poco a poco
+  s.startedAt = Date.now() + (dq.double || dq.sd ? DBL_INTRO : 0); // la doble se anuncia unos segundos antes
+  hSave(); hBroadcast(); hRender(); beep(660,120); setTimeout(()=>beep(880,160),130);
+}
+const DBL_INTRO = 3200;
+// agrega una pregunta extra (del mismo quiz, al azar) para la muerte súbita
+function hAddSuddenDeath(){
+  const s = H.s, n = s.nBase || s.qs.length;
+  if(!Array.isArray(s.sdUsed) || s.sdUsed.length >= n) s.sdUsed = [];
+  const left = Array.from({ length:n }, (_,i) => i).filter(i => !s.sdUsed.includes(i));
+  const pick = left[Math.floor(Math.random() * left.length)];
+  s.sdUsed.push(pick);
+  const q = JSON.parse(JSON.stringify(s.qs[pick]));
+  // revolver las opciones para que no la contesten de memoria
+  const idx = q.a.map((_,i) => i).filter(i => (q.a[i]||"").trim());
+  for(let i = idx.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  const a = idx.map(i => q.a[i]); while(a.length < 4) a.push("");
+  q.c = idx.indexOf(q.c); q.a = a; q.sd = true; delete q.double;
+  s.sdRound = (s.sdRound || 0) + 1;
+  s.qs.push(q);
+}
+const hQLabel = () => { const s = H.s, q = s.qs[s.qi]; return q && q.sd ? "⚔️ Muerte súbita · ronda " + s.sdRound : "Pregunta " + (s.qi+1) + " de " + (s.nBase || s.qs.length); };
+function hResultMsg(cid){
+  const s = H.s, p = s.players[cid], q = s.qs[s.qi];
+  return { t:"result", ...p.last, total:p.total||0, alive:aliveCount(), of:Object.keys(s.players).length, correct:q.c, correctText:q.a[q.c], fast:s.fast || null };
+}
+function hReveal(){
+  const s = H.s; if(s.phase !== "question") return;
+  clearInterval(H.tick); clearTimeout(H.allT);
+  const q = s.qs[s.qi], qn = s.qi + 1;
+  const alive = Object.entries(s.players).filter(([,p]) => !p.out);
+  const failed = alive.filter(([cid]) => !(s.ans[cid] && s.ans[cid].c === q.c));
+  // si todos los que seguían en pie fallan, nadie queda eliminado
+  s.saved = failed.length > 0 && failed.length === alive.length;
+  s.elim = s.saved ? [] : failed.map(([,p]) => p.name);
+  Object.entries(s.players).forEach(([cid,p]) => {
+    if(p.out){ p.last = { qn, spectator:true, ok:false, choice:-1, answered:false }; return; }
+    const a = s.ans[cid], ok = !!a && a.c === q.c;
+    if(ok){ p.total = (p.total||0) + 1; p.tms = (p.tms||0) + a.ms; }
+    const outNow = !ok && !s.saved;
+    if(outNow) p.out = qn;
+    p.last = { qn, ok, choice:a ? a.c : -1, answered:!!a, outNow, saved:!ok && s.saved };
+  });
+  if(q.sd && !s.saved){
+    const right = Object.entries(s.players).filter(([cid,p]) => !p.out && s.ans[cid] && s.ans[cid].c === q.c);
+    if(right.length >= 2){
+      right.sort((a,b) => s.ans[b[0]].ms - s.ans[a[0]].ms);
+      const sp = right[0][1];
+      sp.out = qn; sp.last.outNow = true; sp.last.slow = true;
+      s.slow = sp.name; s.elim = s.elim.concat([sp.name]);
+    }
+  }
+  const fastId = Object.keys(s.ans).filter(id => s.ans[id].c === q.c && s.players[id]).sort((a,b) => s.ans[a].ms - s.ans[b].ms)[0];
+  s.fast = fastId ? { qn, name:s.players[fastId].name, sec:+(s.ans[fastId].ms/1000).toFixed(1), av:s.players[fastId].av ?? 0 } : null;
+  s.phase = "reveal"; hSave(); hBroadcast(); hRender();
+  if(s.elim.length){ beep(180,260,"sawtooth"); setTimeout(() => beep(110,420,"sawtooth"), 220); }
+  else { beep(520,110); setTimeout(() => beep(780,220), 120); }
+  onlineIds().forEach(cid => connFor(cid).send(hResultMsg(cid)));
+}
+function hBoard(){ H.s.phase = "board"; hSave(); hBroadcast(); hRender(); }
+function hEnd(){
+  const s = H.s; s.phase = "end";
+  s.podium = ranked().map(p => ({ name:p.name, out:p.out||0, total:p.total||0, av:p.av ?? 0 }));
+  hSave(); hBroadcast(); hRender();
+  onlineIds().forEach(cid => connFor(cid).send({ t:"podium", list:s.podium, me:s.players[cid].name }));
+}
+function hKick(cid){
+  const c = connFor(cid); c.send({ t:"kicked" }); delete H.s.players[cid]; delete H.s.ans[cid];
+  hSave(); hRenderPeople(); hBroadcast();
+}
+
+/* --- pantallas de la profe --- */
+function hRender(){ clearInterval(H.tick); if(H.view === "edit") hEditor(); else hGame(); }
+function hTopBar(extra){
+  return `<header class="row">
+    <h1 class="brand">EL ÚLTIMO EN PIE <span>PROFE ERICKA</span></h1><span class="spacer"></span>
+    ${extra||""}
+    <button class="pinChip" id="pinChip" title="Mostrar el PIN en grande"><span class="dot netDot ${H.netOk?"":"off"}"></span>PIN <b>${esc(H.s.code)}</b></button>
+  </header><p class="hint netMsg">${esc(H.netMsg||"")}</p>`;
+}
+function hWirePin(){ const b = $("pinChip"); if(b) b.onclick = hShowPin; }
+function hShowPin(){
+  const o = document.createElement("div"); o.className = "overlay"; o.id = "ovPin";
+  o.innerHTML = `<div class="inner"><p style="font-size:24px;font-weight:800">Entren a <b>${esc(hLink())}</b> y escriban el PIN</p><div class="bigPin">${esc(H.s.code)}</div><p class="muted">Toque para cerrar</p></div>`;
+  o.onclick = () => o.remove(); document.body.appendChild(o);
+}
+
+function hEditor(){
+  const ready = QS.filter(qReady).length;
+  app.innerHTML = `<div class="wrap">
+    ${hTopBar(H.s.qs.length && H.s.phase !== "lobby" ? '<button class="ghost small" id="backGame">Volver al juego</button>' : "")}
+    <section class="box">
+      <div class="row"><h2>Quizzes listos</h2><span class="spacer"></span>
+        <div class="filters" id="libFilter">${["Todos","Cultura general","Costa Rica","Informática"].concat(MINE.length ? ["Mis quizzes"] : []).map(f => `<button class="small ${H.lib === f || (!H.lib && f === "Todos") ? "on" : "ghost"}" data-f="${esc(f)}">${esc(f)}</button>`).join("")}</div></div>
+      <p class="hint">Toque <b>Usar</b> para jugar uno tal cual, o <b>Agregar</b> para sumarlo a las preguntas que ya tiene. Después puede cambiar lo que quiera.</p>
+      <div class="lib" id="lib"></div>
+      <div class="row saveRow">
+        <input id="mineName" maxlength="40" placeholder="Nombre para guardar sus preguntas actuales" aria-label="Nombre del quiz">
+        <button class="ghost" id="saveMine" ${QS.length ? "" : "disabled"}>Guardar como quiz mío</button>
+      </div>
+    </section>
+    <div class="edGrid">
+      <section class="box">
+        <h2><span class="step">1.</span> Pegue sus preguntas</h2>
+        <p class="hint">Cópielas de Word, de un PDF o escríbalas. Así las acomodo solas:</p>
+        <pre class="hint" style="margin:0;white-space:pre-wrap;background:var(--deep);border-radius:10px;padding:10px 12px">1. ¿Cuál es la capital de Francia?
+a) Madrid
+b) París
+c) Roma
+d) Berlín
+
+2. ¿El agua hierve a 100 °C?
+a) Verdadero
+b) Falso</pre>
+        <p class="hint">No hace falta poner la correcta aquí; la marca después. Si quiere, póngale un <code>*</code> al final de la opción correcta y queda marcada.</p>
+        <textarea id="paste" placeholder="Pegue aquí sus preguntas…" aria-label="Preguntas para acomodar"></textarea>
+        <div class="row"><button class="go" id="doParse">Acomodar preguntas</button><span class="hint" id="parseMsg"></span></div>
+      </section>
+      <section class="box">
+        <div class="row"><h2><span class="step">2.</span> Marque la correcta</h2><span class="spacer"></span>
+          <button class="ghost small" id="addQ">+ Pregunta</button>
+          ${QS.length ? '<button class="ghost small" id="clearQ">Borrar todas</button>' : ""}</div>
+        <p class="hint">Toque el ✓ de la opción correcta en cada pregunta.</p>
+        <div class="cards" id="cards"></div>
+      </section>
+    </div>
+    <div class="sticky">
+      <b id="readyTxt">${ready} de ${QS.length} preguntas listas</b>
+      <span class="hint" id="needTxt">${QS.length && ready < QS.length ? "Las que tienen borde amarillo no entran al juego todavía." : ""}</span>
+      <span class="spacer"></span>
+      <button class="go" id="openLobby" ${ready ? "" : "disabled"}><span class="step" style="color:inherit">3.</span> Abrir sala para jugar</button>
+    </div>
+  </div>`;
+  hWirePin();
+  hRenderCards();
+  hRenderLib();
+  $("libFilter").onclick = e => { const b = e.target.closest("button[data-f]"); if(!b) return; H.lib = b.dataset.f; $("libFilter").querySelectorAll("button").forEach(x => x.className = "small " + (x === b ? "on" : "ghost")); hRenderLib(); };
+  $("saveMine").onclick = () => {
+    const name = $("mineName").value.replace(/\s+/g," ").trim();
+    if(!name){ $("mineName").focus(); toast("Escriba un nombre para su quiz."); return; }
+    const i = MINE.findIndex(m => m.title.toLowerCase() === name.toLowerCase());
+    const rec = { title:name, qs:JSON.parse(JSON.stringify(QS)) };
+    if(i >= 0) MINE[i] = rec; else MINE.push(rec);
+    saveMine(); H.lib = "Mis quizzes"; hEditor(); toast(i >= 0 ? "Quiz «" + name + "» actualizado" : "Quiz «" + name + "» guardado");
+  };
+  $("doParse").onclick = () => {
+    const r = parseQuestions($("paste").value);
+    if(!r.qs.length){ $("parseMsg").textContent = "No encontré preguntas. Pegue el texto y vuelva a tocar el botón."; return; }
+    QS = QS.concat(r.qs); saveQS(); $("paste").value = "";
+    hEditor();
+    $("parseMsg").textContent = "Acomodé " + r.qs.length + " preguntas." + (r.warn.length ? " " + r.warn.join(" ") : "");
+    const firstNew = document.querySelectorAll(".card")[QS.length - r.qs.length]; if(firstNew) firstNew.scrollIntoView({behavior:"smooth", block:"start"});
+  };
+  $("addQ").onclick = () => { QS.push(blankQ()); saveQS(); hEditor(); const all = document.querySelectorAll(".card input"); const last = document.querySelectorAll(".card"); last[last.length-1].querySelector("input").focus(); };
+  if($("clearQ")) armButton($("clearQ"), "Borrar todas", () => { QS = []; saveQS(); hEditor(); }, "¿Borrar todas? Toque otra vez");
+  $("openLobby").onclick = hOpenLobby;
+  if($("backGame")) $("backGame").onclick = () => { H.view = "game"; hRender(); };
+}
+function hRenderLib(){
+  const f = H.lib || "Todos";
+  const items = PACKS.map(p => ({ key:"p:" + p.id, tag:p.tag, title:p.title, n:p.qs.length, mine:false }))
+    .concat(MINE.map((m,i) => ({ key:"m:" + i, tag:"Mis quizzes", title:m.title, n:m.qs.length, mine:true })))
+    .filter(it => f === "Todos" || it.tag === f);
+  const tagCls = { "Cultura general":"t0", "Costa Rica":"t1", "Informática":"t2", "Mis quizzes":"t3" };
+  const box = $("lib");
+  box.innerHTML = items.map(it => `<div class="pack">
+      <span class="tag ${tagCls[it.tag]}">${esc(it.tag)}</span>
+      <b class="pTitle">${esc(it.title)}</b>
+      <span class="hint">${it.n} preguntas</span>
+      <div class="row"><button class="go small" data-use="${it.key}">Usar</button><button class="ghost small" data-add="${it.key}">+ Agregar</button>
+      ${it.mine ? `<span class="spacer"></span><button class="ghost small" data-del="${it.key}">Borrar</button>` : ""}</div>
+    </div>`).join("");
+  const getQs = key => { const [k, id] = key.split(":"); if(k === "p") return packToQs(PACKS.find(p => p.id === id)); return JSON.parse(JSON.stringify(MINE[+id].qs)); };
+  const titleOf = key => { const [k, id] = key.split(":"); return k === "p" ? PACKS.find(p => p.id === id).title : MINE[+id].title; };
+  box.querySelectorAll("button[data-use]").forEach(b => {
+    const go = () => { QS = getQs(b.dataset.use); saveQS(); hEditor(); toast("Listo: «" + titleOf(b.dataset.use) + "». Ya puede abrir la sala."); };
+    if(QS.length) armButton(b, "Usar", go, "¿Cambiar sus preguntas? Toque otra vez"); else b.onclick = go;
+  });
+  box.querySelectorAll("button[data-add]").forEach(b => b.onclick = () => { const add = getQs(b.dataset.add); QS = QS.concat(add); saveQS(); hEditor(); toast("Agregué " + add.length + " preguntas de «" + titleOf(b.dataset.add) + "»."); });
+  box.querySelectorAll("button[data-del]").forEach(b => armButton(b, "Borrar", () => { MINE.splice(+b.dataset.del.split(":")[1], 1); saveMine(); if(!MINE.length) H.lib = "Todos"; hEditor(); }, "¿Seguro?"));
+}
+function hRenderCards(){
+  const box = $("cards");
+  if(!QS.length){ box.innerHTML = `<div class="empty">Aquí aparecerán sus preguntas acomodadas.<br>Péguelas a la izquierda y toque <b>Acomodar preguntas</b>.</div>`; return; }
+  box.innerHTML = QS.map((x,i) => {
+    const ok = qReady(x);
+    return `<div class="card ${ok?"":"need"}" data-i="${i}">
+      <div class="cTop"><span class="cNum">${i+1}</span><input id="q${i}" data-f="q" value="${esc(x.q)}" placeholder="Escriba la pregunta" aria-label="Pregunta ${i+1}">
+        <span class="pill ${ok?"ok":"no"}">${ok ? "Lista" : (x.c < 0 ? "Falta la correcta" : "Incompleta")}</span></div>
+      <div class="opts">${x.a.map((o,j) => `
+        <div class="opt ${x.c===j?"right":""}">
+          <span class="mk a${j}" title="${SHAPE_NAMES[j]}">${SHAPES[j]}</span>
+          <input id="q${i}a${j}" data-f="a" data-j="${j}" value="${esc(o)}" placeholder="Opción ${LETTERS[j]}${j>1?" (opcional)":""}" aria-label="Pregunta ${i+1}, opción ${LETTERS[j]}">
+          <button class="tick" data-act="right" data-j="${j}" aria-pressed="${x.c===j}" aria-label="Marcar ${LETTERS[j]} como correcta" title="Esta es la correcta">✓</button>
+        </div>`).join("")}</div>
+      <div class="cFoot">
+        <label for="q${i}t">Tiempo</label>
+        <select id="q${i}t" data-f="t">${TIMES.map(s => `<option value="${s}" ${x.t==s?"selected":""}>${s} s</option>`).join("")}</select>
+        <span class="spacer"></span>
+        <button class="ghost small" data-act="up" ${i?"":"disabled"} aria-label="Subir">↑</button>
+        <button class="ghost small" data-act="down" ${i<QS.length-1?"":"disabled"} aria-label="Bajar">↓</button>
+        <button class="ghost small" data-act="del">Quitar</button>
+      </div>
+    </div>`;
+  }).join("");
+  box.oninput = box.onchange = e => {
+    const el = e.target, card = el.closest(".card"); if(!card) return;
+    const i = +card.dataset.i, x = QS[i], f = el.dataset.f;
+    if(f === "q") x.q = el.value; else if(f === "a") x.a[+el.dataset.j] = el.value; else if(f === "t") x.t = +el.value; else return;
+    saveQS(); hRefreshCard(card, x);
+  };
+  box.onclick = e => {
+    const b = e.target.closest("button[data-act]"); if(!b) return;
+    const card = b.closest(".card"), i = +card.dataset.i, act = b.dataset.act;
+    if(act === "right"){
+      const j = +b.dataset.j;
+      if(!QS[i].a[j].trim()){ toast("Esa opción está vacía. Escríbala primero."); return; }
+      QS[i].c = QS[i].c === j ? -1 : j; saveQS();
+      card.querySelectorAll(".opt").forEach((o,k) => { o.classList.toggle("right", QS[i].c === k); o.querySelector(".tick").setAttribute("aria-pressed", QS[i].c === k); });
+      hRefreshCard(card, QS[i]); return;
+    }
+    if(act === "del") QS.splice(i,1);
+    if(act === "up") [QS[i-1], QS[i]] = [QS[i], QS[i-1]];
+    if(act === "down") [QS[i+1], QS[i]] = [QS[i], QS[i+1]];
+    saveQS(); hEditor();
+  };
+}
+function hRefreshCard(card, x){
+  const ok = qReady(x);
+  card.classList.toggle("need", !ok);
+  const pill = card.querySelector(".pill"); pill.className = "pill " + (ok ? "ok" : "no"); pill.textContent = ok ? "Lista" : (x.c < 0 ? "Falta la correcta" : "Incompleta");
+  const ready = QS.filter(qReady).length;
+  $("readyTxt").textContent = ready + " de " + QS.length + " preguntas listas";
+  $("needTxt").textContent = ready < QS.length ? "Las que tienen borde amarillo no entran al juego todavía." : "";
+  $("openLobby").disabled = !ready;
+}
+
+function hGame(){
+  const s = H.s, q = s.qs[s.qi];
+  const controls = {
+    lobby: `<button class="ghost small" id="toEdit">Editar preguntas</button>`,
+    question: `<button class="ghost small" id="skip">Mostrar respuesta</button>`,
+    reveal: "", board: "", end: ""
+  }[s.phase] || "";
+  let body = "";
+  if(s.phase === "lobby"){
+    body = `
+    <div class="lobbyHead">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <p class="where">Entren desde el celular a<br><b>${esc(hLink())}</b></p>
+        <p style="font-weight:700">y escriban este PIN:</p>
+      </div>
+      <div class="bigPin">${esc(s.code)}</div>
+    </div>
+    <div class="row"><h2 id="pplCount" style="font-size:26px"></h2><span class="spacer"></span>
+      <span class="hint">${s.qs.length} preguntas · 💀 si falla, queda eliminado · ⏱ el tiempo baja en cada pregunta</span>
+      <button class="go" id="startGame" style="font-size:20px;padding:14px 26px">Empezar ▶</button></div>
+    <div class="people" id="people"></div>`;
+  } else if(s.phase === "question"){
+    const R = 50, C = 2*Math.PI*R;
+    body = `
+    <div class="bar">${hQLabel()}${q.double ? ' <span class="dblBadge">⚡ DOBLE PUNTAJE · mitad del tiempo</span>' : ""}<span class="aliveChip">❤️ Quedan ${aliveCount()}</span><span class="spacer"></span><span class="count" id="ansCount"></span></div>
+    ${(q.double || q.sd) && Date.now() < s.startedAt ? (q.sd ? sdSplashHTML() : dblSplashHTML()) : ""}
+    ${q.sd ? '<div class="row center"><span class="sdBadge">⚔️ MUERTE SÚBITA · cae el que falle y el más lento</span></div>' : ""}
+    <div class="qtext ${q.double ? "dbl" : ""} ${q.sd ? "sdq" : ""}">${esc(q.q)}</div>
+    <div class="mid">
+      <div class="clock"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${R}" stroke="var(--line)" stroke-width="10" fill="none"/>
+        <circle id="arc" cx="60" cy="60" r="${R}" stroke="var(--a2)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="0"/></svg><b id="sec"></b></div>
+      <div class="answers">${q.a.map((o,j) => o.trim() ? `<div class="ans a${j}">${SHAPES[j]}<span class="txt">${esc(o)}</span></div>` : "").join("")}</div>
+    </div>`;
+  } else if(s.phase === "reveal"){
+    const counts = [0,0,0,0]; Object.values(s.ans).forEach(a => counts[a.c]++);
+    const right = counts[q.c];
+    const elim = s.elim || [];
+    body = `
+    <div class="bar">${hQLabel()}<span class="spacer"></span><span class="count">${right} acertaron</span></div>
+    ${s.saved ? '<div class="elimBox saved">😮 ¡Todos fallaron! Esta vez nadie queda eliminado</div>'
+      : elim.length ? `<div class="elimBox">💀 ${elim.length === 1 ? "Queda eliminado" : "Quedan eliminados (" + elim.length + ")"}: <b>${elim.map(esc).join(", ")}</b></div>`
+      : '<div class="elimBox saved">💪 ¡Nadie cayó en esta pregunta!</div>'}
+    ${s.slow ? `<div class="elimBox">🐢 <b>${esc(s.slow)}</b> acertó, pero cayó por ser el más lento</div>` : ""}
+    ${s.fast && s.fast.qn === s.qi+1 ? `<div class="fast">⚡ El más rápido: ${avOf(s.fast)} <b>${esc(s.fast.name)}</b> en ${s.fast.sec} s</div>` : ""}
+    <div class="qtext">${esc(q.q)}</div>
+    <div class="answers">${q.a.map((o,j) => o.trim() ? `<div class="ans a${j} ${j===q.c?"win":"dim"}">${SHAPES[j]}<span class="txt">${esc(o)}${j===q.c?" ✔":""}</span><span class="n">${counts[j]}</span></div>` : "").join("")}</div>
+    <div class="row center"><button class="go" id="toBoard" style="font-size:20px;padding:14px 26px">Ver quién sigue en pie →</button></div>`;
+  } else if(s.phase === "board"){
+    const alive = aliveCount(), all = Object.keys(s.players).length;
+    const over = alive <= 1, toSd = !over && s.qi >= s.qs.length - 1;
+    body = `
+    <div class="survHead"><span class="big">❤️ Quedan <b>${alive}</b></span><span class="hint" style="font-size:18px">de ${all} jugadores · ${hQLabel().toLowerCase()}</span></div>
+    ${all ? tilesHTML(ranked(), s.qi+1) : '<p class="center hint">Todavía no hay jugadores.</p>'}
+    <div class="row center"><button class="go" id="next" style="font-size:20px;padding:14px 26px">${over ? "Ver al ganador 👑" : toSd ? "⚔️ ¡Muerte súbita!" : "Siguiente pregunta →"}</button></div>`;
+  } else if(s.phase === "end"){
+    const r = s.podium || [];
+    const champs = r.filter(p => !p.out).length ? r.filter(p => !p.out) : r.slice(0,1);
+    body = r.length ? `
+    <h2 class="center big finTitle" id="finTitle">💀 ¡Que caigan uno por uno!</h2>
+    ${stageHTML(r)}
+    ${podiumAvHTML(r)}
+    <div class="box rankBox" id="finRank" hidden style="display:none">${r.map((p,k) => `<div class="stat"><span style="overflow-wrap:anywhere">${k+1}. ${avOf(p)} ${esc(p.name)}</span><b>${p.out ? "💀 cayó en la " + p.out : "👑 en pie"}</b></div>`).join("")}</div>`
+    : `<h2 class="center big">Fin del juego</h2>`;
+    body += `<div class="row center" style="margin-top:12px"><button class="go" id="again">Jugar otra vez</button><button class="ghost" id="toEdit">Editar preguntas</button><button class="ghost" id="newGame">Juego nuevo (otro PIN)</button></div>`;
+  }
+  app.innerHTML = `<div class="wrap">${hTopBar(controls)}${body}</div>`;
+  hWirePin();
+  const on = (id, fn) => { const b = $(id); if(b) b.onclick = fn; };
+  on("toEdit", () => { H.view = "edit"; hRender(); });
+  on("startGame", () => { if(!Object.keys(H.s.players).length){ toast("Todavía no ha entrado nadie."); return; } hNext(); });
+  on("skip", hReveal); on("toBoard", hBoard); on("next", hNext);
+  on("again", () => hOpenLobby());
+  if($("newGame")) armButton($("newGame"), "Juego nuevo (otro PIN)", () => { ls.del("ultimo_host"); try{ if(H.roomRef) H.roomRef.remove(); }catch(e){} setTimeout(() => location.reload(), 400); }, "¿Sacar a todos y cambiar PIN? Toque otra vez");
+  hRenderPeople(); hRenderCount();
+  if(s.phase === "question") hStartClock();
+  if(s.phase === "end") runFinale(() => {
+    const t = $("finTitle"), w = (H.s.podium || [])[0];
+    if(t && w){ t.textContent = "👑 ¡" + w.name + " es el último en pie!"; t.classList.add("win"); }
+    [523,659,784,1047].forEach((f,k) => setTimeout(() => beep(f,260,"triangle"), k*160)); confetti();
+    setTimeout(() => { danceOnPodium(); const rk = $("finRank"); if(rk) rk.hidden = false; }, 500);
+  });
+}
+function hRenderPeople(){
+  const box = $("people"); if(!box) return;
+  const list = Object.entries(H.s.players);
+  $("pplCount").textContent = list.length === 1 ? "1 jugador" : list.length + " jugadores";
+  box.innerHTML = list.length ? list.map(([id,p]) => `<span class="person"><span class="dot ${isOn(p)?"":"off"}"></span><span class="cav">${avOf(p)}</span>${esc(p.name)}<button data-id="${esc(id)}" aria-label="Sacar a ${esc(p.name)}" title="Sacar del juego">✕</button></span>`).join("")
+    : `<p class="hint" style="font-size:18px">Esperando jugadores…</p>`;
+  box.onclick = e => { const b = e.target.closest("button[data-id]"); if(b) hKick(b.dataset.id); };
+}
+function hRenderCount(){
+  const el = $("ansCount"); if(!el) return;
+  const n = Object.keys(H.s.ans).length, of = aliveCount();
+  el.textContent = n + " de " + of + " respondieron";
+}
+// anuncio de pregunta doble (en la compu y en los celulares)
+function dblSplashHTML(){
+  return `<div class="dblSplash" id="dblSplash"><div class="in"><span class="bolt">⚡</span><span class="x2">×2</span><h2>¡PREGUNTA DOBLE!</h2><p>Vale el doble de puntos… pero tiene la mitad del tiempo</p></div></div>`;
+}
+function sdSplashHTML(){
+  return `<div class="dblSplash sd" id="dblSplash"><div class="in"><span class="bolt">⚔️</span><span class="x2">¡MUERTE SÚBITA!</span><h2>Quedan varios en pie…</h2><p>Cae el que falle… y también el más lento</p></div></div>`;
+}
+function dblSound(){ [440,554,659,880].forEach((f,k) => setTimeout(() => beep(f,140,"sawtooth"), k*130)); }
+function hStartClock(){
+  if(H.s.qs[H.s.qi] && (H.s.qs[H.s.qi].double || H.s.qs[H.s.qi].sd) && Date.now() < H.s.startedAt) dblSound();
+  const s = H.s, C = 2*Math.PI*50; let lastSec = -1;
+  const paint = () => {
+    const left = s.dur - (Date.now() - s.startedAt)/1000;
+    const sec = Math.min(s.dur, Math.max(0, Math.ceil(left)));
+    const el = $("sec"); if(!el) return;
+    if(left <= s.dur){ const sp = $("dblSplash"); if(sp) sp.remove(); }
+    el.textContent = sec; $("arc").style.strokeDashoffset = C * (1 - Math.min(1, Math.max(0,left)/s.dur));
+    if(sec !== lastSec){ lastSec = sec; if(sec <= 5 && sec > 0) beep(880,70,"square"); }
+    if(left <= 0) hReveal();
+  };
+  paint(); clearInterval(H.tick); H.tick = setInterval(paint, 200);
+}
+
+/* ============================================================
+   MODO ESTUDIANTE
+   ============================================================ */
+const S = { code:"", name:"", cid:"", joined:false, st:null, qn:0, sent:{}, got:{}, result:null, tick:null, retry:null, attempts:0, openT:null, ping:null, resendT:null };
+
+function studentInit(){
+  S.cid = ss.get("ultimo_cid") || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+  S.cid = S.cid.replace(/[^a-z0-9]/gi,""); ss.set("ultimo_cid", S.cid);
+  sJoinView();
+  clearInterval(S.ping);
+  S.ping = setInterval(() => {
+    if(!S.joined) return;
+    sSend({ t:"ping" });
+    if(Date.now() - (S.lastHeard || 0) > 25000){ S.lastHeard = Date.now(); sRetry(); }
+  }, 4000);
+}
+// Entrada en dos pasos, como Kahoot: primero el PIN, después el nombre
+// portada: título de carreras y carretera con carros pasando
+function sHero(){
+  const crowd = ["🦁","🐸","🐼","🦊","🤖","🐙","👽"];
+  return `<header class="hero">
+    <p class="hTop">EL ÚLTIMO</p>
+    <h1 class="hMain">EN PIE</h1><br>
+    <span class="hChip">PROFE ERICKA</span>
+    <div class="crowd" aria-hidden="true">${crowd.map((a,i) => `<span class="c${i}">${a}</span>`).join("")}</div>
+  </header>`;
+}
+function sJoinView(msg){
+  const step = S.pinOk ? "name" : "pin";
+  const sala = new URLSearchParams(location.search).get("sala");
+  app.innerHTML = `<div class="phone">
+    ${sHero()}
+    <form class="box join" id="joinForm" autocomplete="off">
+    ${step === "pin" ? `
+      <p class="joinTitle">¿Listo para sobrevivir?</p>
+      <label for="inCode">Anote el PIN del juego</label>
+      <input id="inCode" class="codeIn" inputmode="numeric" maxlength="4" placeholder="0000" value="${esc(S.code || (sala||"").replace(/\D/g,"").slice(0,4))}">
+      <p class="hint">Es el número de 4 cifras que aparece en la pantalla de la profe.</p>
+      <p class="err" id="joinErr">${esc(msg||"")}</p>
+      <button class="go" id="joinBtn" style="font-size:22px;padding:14px">Siguiente →</button>` : `
+      <div class="row"><span class="muted" style="font-weight:800">PIN <b style="color:var(--a2);letter-spacing:.1em">${esc(S.code)}</b> ✓</span><span class="spacer"></span><button type="button" class="ghost small" id="chPin">Cambiar</button></div>
+      <label for="inName">Su nombre</label>
+      <input id="inName" maxlength="24" autocapitalize="words" placeholder="Nombre y apellido" value="${esc(ls.get("quiz_name",""))}">
+      <label class="pairChk" for="inPair"><input type="checkbox" id="inPair" ${ls.get("quiz_pair", false) ? "checked" : ""}> Jugamos en pareja (un solo celular)</label>
+      <div id="pairBox" ${ls.get("quiz_pair", false) ? "" : "hidden"}>
+        <label for="inName2">Nombre del compañero o compañera</label>
+        <input id="inName2" maxlength="24" autocapitalize="words" placeholder="Nombre y apellido" value="${esc(ls.get("quiz_name2",""))}">
+      </div>
+      <p class="err" id="joinErr">${esc(msg||"")}</p>
+      <button class="go" id="joinBtn" style="font-size:22px;padding:14px">¡Entrar! 💪</button>`}
+    </form>
+    <p class="center hint" style="text-align:center">¿Es docente? <a href="?profe" style="color:var(--a2);font-weight:800">Abrir modo docente</a></p>
+  </div>`;
+  const err = t => $("joinErr").textContent = t;
+  if(step === "pin"){
+    $("inCode").focus();
+    $("inCode").oninput = e => { e.target.value = e.target.value.replace(/\D/g,"").slice(0,4); };
+    $("joinForm").onsubmit = e => {
+      e.preventDefault();
+      const code = $("inCode").value.replace(/\D/g,"");
+      if(code.length !== 4){ err("El PIN tiene 4 números. Véalo en la pantalla de la profe."); return; }
+      S.code = code; err(""); $("joinBtn").disabled = true; $("joinBtn").textContent = "Buscando el juego…";
+      beep(1,1); // desbloquea el sonido en el celular
+      sCheckPin(code, () => { S.pinOk = true; sJoinView(); }, m => { $("joinBtn").disabled = false; $("joinBtn").textContent = "Siguiente →"; err(m); });
+    };
+  } else {
+    $("inName").focus();
+    $("chPin").onclick = () => { S.pinOk = false; sJoinView(); };
+    $("inPair").onchange = () => { $("pairBox").hidden = !$("inPair").checked; if($("inPair").checked) $("inName2").focus(); };
+    $("joinForm").onsubmit = e => {
+      e.preventDefault();
+      const name = $("inName").value.replace(/\s+/g," ").trim();
+      if(name.length < 2){ err("Escriba su nombre."); return; }
+      const pair = $("inPair").checked, name2 = $("inName2").value.replace(/\s+/g," ").trim();
+      if(pair && name2.length < 2){ err("Escriba el nombre de su compañero o compañera."); $("inName2").focus(); return; }
+      ls.set("quiz_name", name); ls.set("quiz_pair", pair); if(pair) ls.set("quiz_name2", name2);
+      // la pareja juega como un solo piloto con un solo carro
+      S.name = pair ? name + " y " + name2 : name;
+      err(""); $("joinBtn").disabled = true; $("joinBtn").textContent = "Entrando…";
+      S.attempts = 0; sStart();
+    };
+  }
+}
+// revisa que el PIN sea de un Último en Pie abierto antes de pedir el nombre
+function sCheckPin(code, ok, fail){
+  if(!NET.init()){ fail("No se pudo cargar el juego. Revise el internet."); return; }
+  const t = setTimeout(() => fail("Problema de conexión a internet. Intente de nuevo."), 15000);
+  NET.room(code).child("host").once("value").then(snap => {
+    clearTimeout(t);
+    const h = snap.val();
+    if(!h) fail("No hay ningún juego con el PIN " + code + ". Revíselo o pida a la profe que abra el juego.");
+    else if(h.game !== GAME) fail("El PIN " + code + " es de otro juego. Revise el PIN.");
+    else ok();
+  }).catch(e => { clearTimeout(t); console.error(e); fail("No se pudo revisar el PIN. Avise a la profe."); });
+}
+function sJoinFail(msg, badPin){ clearTimeout(S.openT); clearTimeout(S.retry); S.joined = false; if(badPin) S.pinOk = false; sJoinView(msg); }
+function sStart(){
+  if(!NET.init()){ sJoinFail("No se pudo cargar el juego. Revise el internet."); return; }
+  if(S.room){ try{ S.room.child("state").off(); S.room.child("inbox/" + S.cid).off(); }catch(e){} }
+  const room = NET.room(S.code);
+  const failT = setTimeout(() => { if(!S.joined) sJoinFail("Problema de conexión a internet. Intente de nuevo."); }, 15000);
+  room.child("host").once("value").then(snap => {
+    clearTimeout(failT);
+    const h = snap.val();
+    if(!h){ sJoinFail("No hay ningún juego con el PIN " + S.code + ". Revíselo o pida a la profe que abra el juego.", true); return; }
+    if(h.game !== GAME){ sJoinFail("El PIN " + S.code + " es de otro juego. Revise el PIN.", true); return; }
+    S.room = room;
+    room.child("inbox/" + S.cid).on("child_added", s2 => { const d = s2.val(); s2.ref.remove(); S.lastHeard = Date.now(); sOnData(d); });
+    room.child("state").on("value", s2 => { const d = s2.val(); if(d){ S.lastHeard = Date.now(); S.st = d; if(S.joined) sOnState(d); } });
+    S.attempts = 0; sConnect();
+  }).catch(err => { clearTimeout(failT); console.error(err); sJoinFail("No se pudo entrar al juego. Avise a la profe."); });
+}
+function sConnect(){
+  if(!S.room) return;
+  S.attempts++;
+  if(!S.car){ const c = ls.get("quiz_car", null); if(c) S.car = c; }
+  if(S.av == null){ const v = ls.get("ultimo_av", null); if(v != null) S.av = v; }
+  sSend({ t:"join", name:S.name, cid:S.cid, av:S.av ?? null });
+  clearTimeout(S.openT);
+  S.openT = setTimeout(() => {
+    if(S.joined) return;
+    if(S.attempts >= 4){ sJoinFail("La compu de la profe no responde. Revise el PIN y que la profe tenga el juego abierto.", true); return; }
+    const b = $("joinBtn"); if(b) b.textContent = "Entrando… (intento " + (S.attempts+1) + ")";
+    sConnect();
+  }, 6000);
+}
+function sRetry(){ clearTimeout(S.retry); S.retry = setTimeout(() => { S.attempts = 0; S.lastHeard = Date.now(); sConnect(); }, 2500); }
+function sSend(m){ if(!S.room) return; try{ S.room.child("toHost").push(clean({ cid:S.cid, d:m })); }catch(e){ console.error(e); } }
+
+function sOnData(d){
+  if(!d || typeof d !== "object") return;
+  if(d.t === "welcome"){
+    const first = !S.joined;
+    clearTimeout(S.openT); S.joined = true; S.name = d.name;
+    if(first){ if(S.st) sOnState(S.st); else sWait(); }
+    return;
+  }
+  if(d.t === "rejected"){ sJoinFail(d.msg || "No se pudo entrar."); return; }
+  if(d.t === "kicked"){ try{ S.room.child("state").off(); S.room.child("inbox/" + S.cid).off(); }catch(e){} S.room = null; sJoinFail("La profe lo sacó del juego."); return; }
+  if(d.t === "got"){ S.got[d.qn] = true; S.sent[d.qn] = d.choice; clearTimeout(S.resendT); if(S.st && S.st.phase === "question" && S.st.qn === d.qn) sSentView(d.choice, true); return; }
+  if(d.t === "result"){ S.result = d; if(S.st && S.st.phase === "reveal") sResultView(); return; }
+  if(d.t === "podium"){ if(!$("podView")) sPodiumView(d); return; }
+}
+function sOnState(d){
+  if(d.game !== GAME) return;
+  const mine = (d.players||[]).find(p => p.name === S.name);
+  if(d.phase === "lobby"){ S.result = null; S.sent = {}; S.got = {}; if(!$("waitView") || (S.av == null && !S.avShown && sMyAv() != null)){ S.avShown = sMyAv() != null; sWait(); } return; }
+  if(d.phase === "question"){
+    S.endsAt = Date.now() + (d.remaining||0)*1000; S.dur = d.dur || 20;
+    const isNew = S.qn !== d.qn; S.qn = d.qn;
+    if(isNew) S.result = null;
+    if(mine && mine.out){ if(isNew || !$("specView")) sSpectator(d, mine); return; }
+    if(S.sent[d.qn] !== undefined){ if(isNew || !$("sentView")) sSentView(S.sent[d.qn], !!S.got[d.qn]); }
+    else if(isNew || (!$("pad") && !$("dblSplash"))) sPadView(d);
+    return;
+  }
+  clearInterval(S.tick);
+  if(d.phase === "reveal"){
+    if(S.result && S.result.qn === d.qn){ if(!$("verdict")) sResultView(); }
+    else if(!$("verdict")) sNoAnswerView(d, mine);
+    return;
+  }
+  if(d.phase === "board"){ sBoardView(d); return; }
+  if(d.phase === "end" && !$("podView")) sPodiumView({ list:(d.players||[]).slice().sort(byStanding), me:S.name });
+}
+// los eliminados siguen mirando la pregunta, pero ya no contestan
+const sQLabel = d => d.sd ? "⚔️ Muerte súbita · ronda " + (d.sdRound || 1) : "Pregunta " + d.qn + " de " + d.nq;
+function sSpectator(d, mine){
+  app.innerHTML = `<div class="phone" id="specView">${sHead()}
+    <div class="row"><b>${sQLabel(d)}</b><span class="spacer"></span><span class="aliveChip">❤️ ${d.alive}</span><b id="sSec"></b></div>
+    <div class="sBar"><i id="sBar"></i></div>
+    <div class="specBox">💀 Usted cayó en la pregunta ${mine.out}. Siga mirando quién sobrevive.</div>
+    <div class="sQ">${esc(d.q||"")}</div>
+    <div class="sOpts">${(d.texts||[]).map((t,j) => (t||"").trim() ? `<div class="sOpt"><span class="sw a${j}">${SHAPES[j]}</span><span class="t">${esc(t)}</span></div>` : "").join("")}</div>
+  </div>`;
+  sTick();
+}
+function sHead(){ return `<div class="sHead"><span class="dot"></span><span style="font-size:22px">${AVATARS[(sMyAv() ?? 0) % AVATARS.length]}</span><span style="overflow-wrap:anywhere">${esc(S.name)}</span><span class="spacer"></span><span class="muted">PIN ${esc(S.code)}</span></div>`; }
+// mientras esperan, cada uno elige su personaje
+function sMyAv(){
+  if(S.av != null) return S.av;
+  const me = ((S.st && S.st.players) || []).find(p => p.name === S.name);
+  return me && me.av != null ? me.av : null;
+}
+function sWait(){
+  clearInterval(S.tick);
+  const av = sMyAv() ?? 0;
+  app.innerHTML = `<div class="phone" id="waitView">${sHead()}
+    <div class="hello box" style="padding-block:20px"><p class="muted" style="font-weight:800">¡Ya está dentro!</p><p class="me">${esc(S.name)}</p>
+      <div class="bigAv" id="bigAv">${AVATARS[av]}</div>
+      <div class="picker"><h3>Elija su personaje</h3>
+        <div class="avGrid" id="avGrid">${AVATARS.map((a,i) => `<button data-i="${i}" aria-pressed="${i===av}" aria-label="Personaje ${i+1}">${a}</button>`).join("")}</div></div>
+      <p><b>Reglas:</b> si falla o no contesta a tiempo, queda eliminado 💀. El tiempo baja en cada pregunta. ¡El último en pie gana! 👑</p></div></div>`;
+  $("avGrid").onclick = e => {
+    const b = e.target.closest("button[data-i]"); if(!b) return;
+    S.av = +b.dataset.i; ls.set("ultimo_av", S.av); sSend({ t:"av", av:S.av }); beep(880,50);
+    $("bigAv").textContent = AVATARS[S.av];
+    $("avGrid").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", +x.dataset.i === S.av));
+  };
+}
+function sPadView(d){
+  const introMs = (d.double || d.sd) ? ((d.remaining||0) - (d.dur||0)) * 1000 : 0;
+  if(introMs > 250){
+    app.innerHTML = `<div class="phone">${sHead()}</div>` + (d.sd ? sdSplashHTML() : dblSplashHTML());
+    dblSound();
+    clearTimeout(S.splashT); S.splashT = setTimeout(() => { if(S.st && S.st.phase === "question" && S.st.qn === d.qn && S.sent[d.qn] === undefined) sPadView({ ...d, remaining:d.dur }); }, introMs);
+    return;
+  }
+  const n = (d.texts||[]).filter(t => (t||"").trim()).length;
+  app.innerHTML = `<div class="phone">${sHead()}
+    <div class="row"><b>${sQLabel(d)}</b>${d.double ? ' <span class="dblBadge">⚡ ×2</span>' : ""}<span class="spacer"></span><b id="sSec"></b></div>
+    <div class="sBar"><i id="sBar"></i></div>
+    <div class="sQ ${d.double ? "dbl" : ""} ${d.sd ? "sdq" : ""}">${esc(d.q||"")}</div>
+    <div class="pad ${n<=2?"two":""}" id="pad">${(d.texts||[]).map((t,j) => (t||"").trim() ? `<button class="a${j}" data-j="${j}" aria-label="${SHAPE_NAMES[j]}: ${esc(t)}">${SHAPES[j]}<span>${esc(t)}</span></button>` : "").join("")}</div>
+  </div>`;
+  $("pad").onclick = e => {
+    const b = e.target.closest("button[data-j]"); if(!b) return;
+    const j = +b.dataset.j, qn = d.qn;
+    S.sent[qn] = j; beep(990,80);
+    sSend({ t:"answer", qn, choice:j });
+    sSentView(j, false);
+    clearTimeout(S.resendT);
+    S.resendT = setTimeout(function again(){ if(!S.got[qn] && S.st && S.st.phase === "question" && S.st.qn === qn){ sSend({ t:"answer", qn, choice:j }); S.resendT = setTimeout(again, 3000); } }, 3000);
+  };
+  sTick();
+}
+function sSentView(j, ok){
+  const txt = ((S.st && S.st.texts) || [])[j] || "";
+  app.innerHTML = `<div class="phone">${sHead()}
+    <div class="row"><b>Pregunta ${S.st ? S.st.qn : ""}</b><span class="spacer"></span><b id="sSec"></b></div>
+    <div class="sBar"><i id="sBar"></i></div>
+    <div class="sQ small">${esc((S.st && S.st.q) || "")}</div>
+    <div class="sent" id="sentView" style="padding-block:20px"><div class="tile a${j}">${SHAPES[j]}</div>
+      <h2 style="font-size:28px">${ok ? "¡Respuesta enviada!" : "Enviando…"}</h2>
+      <p class="muted" style="overflow-wrap:anywhere">Eligió: <b style="color:var(--chalk)">${esc(txt)}</b></p>
+      <p>Espere a que se acabe el tiempo.</p></div></div>`;
+  sTick();
+}
+function sTick(){
+  clearInterval(S.tick);
+  const paint = () => {
+    const left = (S.endsAt - Date.now())/1000;
+    const a = $("sSec"), b = $("sBar"); if(!a) return;
+    a.textContent = Math.max(0, Math.ceil(left)) + " s";
+    b.style.width = Math.max(0, left/S.dur*100) + "%";
+  };
+  paint(); S.tick = setInterval(paint, 250);
+}
+function sResultView(){
+  const r = S.result; if(!r) return;
+  let cls, ic, title, sub = "";
+  if(r.spectator){ cls = "none"; ic = "👀"; title = "Usted ya está eliminado"; sub = "Siga mirando quién sobrevive"; }
+  else if(r.slow){ cls = "no"; ic = "🐢"; title = "¡Eliminado por lento!"; sub = "Acertó, pero fue el más lento de la muerte súbita"; }
+  else if(r.ok){ cls = "ok"; ic = "💪"; title = "¡Correcto! Sigue en pie"; }
+  else if(r.saved){ cls = "none"; ic = "😮"; title = "Falló… ¡pero todos fallaron!"; sub = "Esta vez nadie queda eliminado. ¡Se salvó!"; }
+  else { cls = "no"; ic = "💀"; title = "¡Eliminado!"; sub = r.answered ? "Llegó hasta la pregunta " + r.qn : "No contestó a tiempo. Llegó hasta la pregunta " + r.qn; }
+  app.innerHTML = `<div class="phone">${sHead()}
+    <div class="verdict ${cls}" id="verdict"><div class="ic">${ic}</div><h2>${title}</h2>${sub ? `<p style="font-weight:800">${sub}</p>` : ""}</div>
+    ${r.fast ? (r.fast.name === S.name ? `<div class="fast">⚡ ¡Usted fue el más rápido! (${r.fast.sec} s)</div>` : `<div class="fast">⚡ El más rápido: <b>${esc(r.fast.name)}</b> en ${r.fast.sec} s</div>`) : ""}
+    ${sAnswerKey(r.correct, r.choice)}
+    <div class="box">
+      <div class="stat"><span>❤️ Siguen en pie</span><b>${r.alive} de ${r.of}</b></div>
+      <div class="stat"><span>Sus aciertos</span><b>${r.total}</b></div>
+    </div></div>`;
+  if(r.ok) [660,880,1100].forEach((f,i) => setTimeout(() => beep(f,120), i*110));
+  else if(r.outNow){ beep(180,260,"sawtooth"); setTimeout(() => beep(110,420,"sawtooth"), 220); }
+}
+function sNoAnswerView(d, mine){
+  app.innerHTML = `<div class="phone">${sHead()}
+    <div class="verdict none" id="verdict"><div class="ic">⏱</div><h2>Respuesta correcta</h2></div>
+    ${sAnswerKey(d.correct, -1)}
+    <div class="box"><div class="stat"><span>❤️ Siguen en pie</span><b>${d.alive}</b></div></div></div>`;
+}
+// la pregunta con todas sus opciones: ✔ en la correcta y ✘ en la que eligió (si falló)
+function sAnswerKey(correct, choice){
+  const st = S.st || {}, texts = st.texts || [];
+  return `<div class="sQ small">${esc(st.q || "")}</div>
+    <div class="sOpts">${texts.map((t,j) => (t||"").trim() ? `<div class="sOpt ${j===correct?"right":(j===choice?"wrong":"")}">
+      <span class="sw a${j}">${SHAPES[j]}</span><span class="t">${esc(t)}</span>
+      ${j===correct ? '<span class="mk">✔</span>' : (j===choice ? '<span class="mk">✘</span>' : "")}</div>` : "").join("")}</div>`;
+}
+// quién sigue en pie, en el celular
+function sBoardView(d){
+  const list = (d.players||[]).slice().sort(byStanding), alive = list.filter(p => !p.out).length, me = list.find(p => p.name === S.name);
+  app.innerHTML = `<div class="phone" id="boardView">${sHead()}
+    <h2 style="font-size:30px;text-align:center">❤️ Quedan ${alive}</h2>
+    ${me ? `<p class="center" style="text-align:center;font-weight:800;font-size:18px">${me.out ? "💀 Usted cayó en la pregunta " + me.out : "💪 ¡Usted sigue en pie!"}</p>` : ""}
+    ${tilesHTML(list, d.qn, S.name)}
+    <p class="center muted" style="text-align:center">${sQLabel(d)}. Prepárese para la siguiente.</p></div>`;
+  const m = document.querySelector(".tile.me"); if(m && m.scrollIntoView) m.scrollIntoView({ block:"nearest" });
+}
+function sPodiumView(d){
+  clearInterval(S.tick);
+  const list = d.list || [], i = list.findIndex(p => p.name === (d.me || S.name)), me = list[i];
+  const win = !!me && !me.out;
+  app.innerHTML = `<div class="phone" id="podView">${sHead()}
+    <h2 class="finTitle" id="finTitle" style="font-size:26px;text-align:center">💀 ¡Que caigan uno por uno!</h2>
+    ${list.length ? stageHTML(list, S.name) : ""}
+    <div class="verdict ${win ? "ok" : "none"}" id="podVerdict" hidden><div class="ic">${win ? "👑" : "💀"}</div>
+      <h2>${win ? "¡Usted es el último en pie!" : me ? "Quedó en el puesto " + (i+1) + "°" : "¡Fin del juego!"}</h2>
+      ${me ? `<p style="font-weight:800">${me.total} aciertos${me.out ? " · cayó en la pregunta " + me.out : ""}</p>` : ""}</div>
+    ${list.length ? podiumAvHTML(list, S.name) : ""}
+    <p class="center muted" style="text-align:center">¡Gracias por jugar!</p></div>`;
+  runFinale(() => {
+    const t = $("finTitle"), w = list[0];
+    if(t && w) t.textContent = "👑 ¡" + w.name + " es el último en pie!";
+    const v = $("podVerdict"); if(v) v.hidden = false;
+    setTimeout(danceOnPodium, 500);
+    if(win){ [660,880,1100,1320].forEach((f,k) => setTimeout(() => beep(f,160), k*120)); confetti(); }
+  });
+}
+
+/* ---------- arranque ---------- */
+if(typeof firebase === "undefined"){
+  app.innerHTML = '<div class="phone"><div class="box center"><h1>El Último en Pie</h1><p>No se pudo cargar el juego. Revise la conexión a internet y recargue la página.</p></div></div>';
+} else if(new URLSearchParams(location.search).has("profe")){
+  teacherInit();
+} else {
+  studentInit();
+}
+</script>
+</body>
+</html>
